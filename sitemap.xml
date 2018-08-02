@@ -3,18 +3,31 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://dafengge0913.github.io/hello/</loc>
-    <lastmod>2018-08-01T12:06:42+08:00</lastmod>
+    <loc>https://dafengge0913.github.io/jmh/</loc>
+    <lastmod>2018-08-01T17:26:21+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dafengge0913.github.io/tags/java/</loc>
+    <lastmod>2018-08-01T17:26:21+08:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://dafengge0913.github.io/tags/</loc>
+    <lastmod>2018-08-01T17:26:21+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dafengge0913.github.io/tags/test/</loc>
+    <lastmod>2018-08-01T17:26:21+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://dafengge0913.github.io/</loc>
-    <lastmod>2018-08-01T12:06:42+08:00</lastmod>
+    <lastmod>2018-08-01T17:26:21+08:00</lastmod>
     <priority>0</priority>
   </url>
   
