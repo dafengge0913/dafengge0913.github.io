@@ -9,9 +9,9 @@
 <link rel="canonical" href="https://dafengge0913.github.io/jmh/">
 
 
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/darcula.min.css">
+    <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.12.0/styles/darcula.min.css">
     
     <title>Java benchmark 工具 JMH - 大峰哥的博客</title>
     
@@ -185,13 +185,7 @@ public class StringBenchmark {
 
 <p>测试结果，这里截取了<strong>部分</strong>输出：</p>
 
-<p>testStringBuilderAdd 测试的某组执行结果:<br />
-每次操作平均耗时1.317 ± 0.306微秒<br />
-最小值：1.259<br />
-平均值：1.317<br />
-最大值：1.374<br />
-标准差：0.047<br />
-平均值的信赖区间：[1.011, 1.622]</p>
+<p><strong>testStringBuilderAdd 测试的某组执行结果:</strong></p>
 
 <pre><code class="language-no-highlight">Result &quot;com.dafengge0913.benchmark.StringBenchmark.testStringBuilderAdd&quot;:
   1.317 ±(99.9%) 0.306 us/op [Average]
@@ -199,13 +193,14 @@ public class StringBenchmark {
   CI (99.9%): [1.011, 1.622] (assumes normal distribution)
 </code></pre>
 
-<p>最后的统计结果：<br />
-(n)：参数n的取值<br />
-Mode: thrpt代表吞吐量，avgt代表平均运行时间。 对应<code>org.openjdk.jmh.annotations.Mode</code>中的<code>shortLabel</code><br />
-Cnt：iteration组数<br />
-Score：对应Units的值<br />
-Units：统计的单位<br />
-Error：误差</p>
+<p>每次操作平均耗时1.317 ± 0.306微秒<br />
+最小值：1.259<br />
+平均值：1.317<br />
+最大值：1.374<br />
+标准差：0.047<br />
+平均值的信赖区间：[1.011, 1.622]</p>
+
+<p><strong>最后的统计结果：</strong></p>
 
 <pre><code class="language-no-highlight">Benchmark                             (n)   Mode  Cnt    Score    Error   Units
 StringBenchmark.testStringAdd           1  thrpt    4  260.743 ± 18.891  ops/us
@@ -221,6 +216,13 @@ StringBenchmark.testStringBuilderAdd    1   avgt    4    0.062 ±  0.005   us/op
 StringBenchmark.testStringBuilderAdd   10   avgt    4    0.109 ±  0.038   us/op
 StringBenchmark.testStringBuilderAdd  100   avgt    4    1.317 ±  0.306   us/op
 </code></pre>
+
+<p>(n)：参数n的取值<br />
+Mode: thrpt代表吞吐量，avgt代表平均运行时间。 对应<code>org.openjdk.jmh.annotations.Mode</code>中的<code>shortLabel</code><br />
+Cnt：iteration组数<br />
+Score：对应Units的值<br />
+Units：统计的单位<br />
+Error：误差</p>
 
 <p>结果表明，在字符较多的情况下，StringBuilder的性能更好，完全符合预期。</p>
 
@@ -427,11 +429,11 @@ StringBenchmark.testStringBuilderAdd  100   avgt    4    1.317 ±  0.306   us/op
       </div>
     </footer>
 
-    <script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/gradle.min.js"></script>
+    <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/go.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/gradle.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
     <script>
       var _hmt = _hmt || [];
