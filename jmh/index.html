@@ -116,7 +116,7 @@ JMH可以精确测量方法在不同输入参数情况下的执行时间和吞�
 
 <p>这里使用Gradle来搭建测试环境，首先在build.gradle中添加依赖：</p>
 
-<pre><code class="language-groovy">    testCompile 'org.openjdk.jmh:jmh-core:jar:1.21'
+<pre><code class="language-gradle">    testCompile 'org.openjdk.jmh:jmh-core:jar:1.21'
     testCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.21'
 </code></pre>
 
@@ -193,7 +193,7 @@ public class StringBenchmark {
 标准差：0.047<br />
 平均值的信赖区间：[1.011, 1.622]</p>
 
-<pre><code>Result &quot;com.dafengge0913.benchmark.StringBenchmark.testStringBuilderAdd&quot;:
+<pre><code class="language-no-highlight">Result &quot;com.dafengge0913.benchmark.StringBenchmark.testStringBuilderAdd&quot;:
   1.317 ±(99.9%) 0.306 us/op [Average]
   (min, avg, max) = (1.259, 1.317, 1.374), stdev = 0.047
   CI (99.9%): [1.011, 1.622] (assumes normal distribution)
@@ -204,10 +204,10 @@ public class StringBenchmark {
 Mode: thrpt代表吞吐量，avgt代表平均运行时间。 对应<code>org.openjdk.jmh.annotations.Mode</code>中的<code>shortLabel</code><br />
 Cnt：iteration组数<br />
 Score：对应Units的值<br />
-Units：统计的单位
+Units：统计的单位<br />
 Error：误差</p>
 
-<pre><code>Benchmark                             (n)   Mode  Cnt    Score    Error   Units
+<pre><code class="language-no-highlight">Benchmark                             (n)   Mode  Cnt    Score    Error   Units
 StringBenchmark.testStringAdd           1  thrpt    4  260.743 ± 18.891  ops/us
 StringBenchmark.testStringAdd          10  thrpt    4   23.293 ±  0.865  ops/us
 StringBenchmark.testStringAdd         100  thrpt    4    0.565 ±  0.008  ops/us
@@ -222,7 +222,7 @@ StringBenchmark.testStringBuilderAdd   10   avgt    4    0.109 ±  0.038   us/op
 StringBenchmark.testStringBuilderAdd  100   avgt    4    1.317 ±  0.306   us/op
 </code></pre>
 
-<p>在字符较多的情况下，StringBuilder的性能更好，完全符合预期。</p>
+<p>结果表明，在字符较多的情况下，StringBuilder的性能更好，完全符合预期。</p>
 
 <h2 id="概念">概念</h2>
 
@@ -250,7 +250,7 @@ StringBenchmark.testStringBuilderAdd  100   avgt    4    1.317 ±  0.306   us/op
 
 <h3 id="benchmarkmode">@BenchmarkMode</h3>
 
-<p>JMH进行Benchmark时使用的模式。目前1.21版本共包含四种模式：</p>
+<p>JMH进行benchmark时使用的模式。目前1.21版本共包含四种模式：</p>
 
 <ul>
 <li>Throughput： 每个单位时间执行的操作数<br /></li>
@@ -431,6 +431,7 @@ StringBenchmark.testStringBuilderAdd  100   avgt    4    1.317 ±  0.306   us/op
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/gradle.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
     <script>
       var _hmt = _hmt || [];
