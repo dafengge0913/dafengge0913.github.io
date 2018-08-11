@@ -6,14 +6,14 @@
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 <meta name="generator" content="Hugo 0.45.1" />
 
-<link rel="canonical" href="https://dafengge0913.github.io/tags/java/">
+<link rel="canonical" href="https://dafengge0913.github.io/tags/jvm/">
 
 
     <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.12.0/styles/darcula.min.css">
     
-    <title>Java - 大峰哥的博客</title>
+    <title>Jvm - 大峰哥的博客</title>
     
     <link href="https://dafengge0913.github.io/css/styles.css" rel="stylesheet">
     
@@ -48,7 +48,7 @@
 
     
     <header class="page-header">
-      <h1>Java</h1>
+      <h1>Jvm</h1>
     </header>
     
 
@@ -83,39 +83,6 @@ jstack后面的参数是PID的值，nid的含义是操作系统映射的线程id
 5.解决bug 这部分代码并不是我写的，很明显这种写法非常不好，一旦serviceAddressType的值不在那三种范围内，就会产生死循环，我重写了这里的逻辑，问题解决。
 总结  任何数据都可能出错，程序逻辑应该充分考虑出现问题的可能。 我们遇到的问题，很可能别人也遇到过，要擅于使用搜索引擎。  </div>
 
-  
-</article>
-</li>
-      
-      <li><article class="li">
-  <header>
-    <ul class="p-facts">
-      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2018-08-01T17:26:21JST">2018-08-01</time></li>
-      
-      
-    </ul>
-    <h2 class="title"><a href="https://dafengge0913.github.io/jmh/">Java benchmark 工具 JMH</a></h2>
-  </header>
-
-  
-  <div class="summary">为什么需要Benchmark工具 如果想要知道一段代码的性能如何，一种常用的做法可能是这样的：
-long start = System.currentTimeMillis(); // do something ... System.out.println(System.currentTimeMillis() - start);  这样做，存在几个问题：
- 结果不够精确
-首先，System.currentTimeMillis() 的注释里明确表示了，根据操作系统的不同，会存在数十毫秒的误差。虽然这个问题比较容易解决，但是造成测试结果不精确的主要原因并不是时间函数的误差，而是JVM和JIT在运行时会对Java应用进行大量的优化，比如某个计算的结果并没有被使用，那么这段代码在执行时就会被忽略，这样的问题比较难察觉。 统计结果有限
-如果需要打印多种类型的测试数据，就需要增加很多额外的代码。 配置不灵活
-不容易修改测试的类型和条件。
-  因此，使用一款靠谱的benchmark工具，既可以减少工作量，又可以确保性能优化过程不被错误的测试数据误导。
-之前使用Golang开发的时候，SDK自带的benchmark就非常好用。转到Java栈之后，我也想找一款好用的benchmark工具，后来通过《Effective Java》了解到了JMH。
-JMH概述 JMH 即Java Microbenchmark Harness，是用于代码微基准测试的工具套件，由JIT的开发人员编写，他们应该比任何人都了解JIT对于测试的影响。
-JMH可以精确测量方法在不同输入参数情况下的执行时间和吞吐量。
-一个例子 这里使用Gradle来搭建测试环境，首先在build.gradle中添加依赖：
-testCompile 'org.openjdk.jmh:jmh-core:jar:1.21' testCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.21'  编写一个简单的类，测试两种字符串连接操作的性能：
-package com.dafengge0913.benchmark; import org.openjdk.jmh.annotations.*; import org.openjdk.jmh.infra.Blackhole; import org.openjdk.jmh.runner.Runner; import org.openjdk.jmh.runner.RunnerException; import org.openjdk.jmh.runner.options.Options; import org.openjdk.jmh.runner.options.OptionsBuilder; import java.util.concurrent.TimeUnit; @BenchmarkMode({Mode.AverageTime, Mode.Throughput}) @Warmup(iterations = 1) @Measurement(iterations = 2, time = 1) @OutputTimeUnit(TimeUnit.</div>
-
-  
-  <footer>
-    <a href="https://dafengge0913.github.io/jmh/" title="Java benchmark 工具 JMH">Read More…</a>
-  </footer>
   
 </article>
 </li>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="pinterest" content="nopin">
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+<meta name="generator" content="Hugo 0.45.1" />
+
+<link rel="canonical" href="https://dafengge0913.github.io/java-high-cpu-troubleshooting/">
+
+
+    <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.12.0/styles/darcula.min.css">
+    
+    <title>Java CPU占用过高故障排除 - 大峰哥的博客</title>
+    
+<meta name="description" content=" 哎&amp;hellip;最近又被策划坑了，因为配置错误，导致程序出现了死循环。当然，这也不能全怪策划，归根结底还是我代码的健壮性不够。在排除问题的过程中，我参考了之前解决类似问题时的笔记，最近正好开始写博客了，所以就整理了一下，并且那次出问题的代码也更好理解一些。故事发生在四年前的一个下午当时没有什么开发任务，正在刷V2EX，就听Fu老大说，“上边安排给咱们一个任务，说是生产服务器的CPU占用，有时候会突然上涨到100%，别的组都查不到原因，也复现不了问题，现在服务器又出问题了，任务交给咱们组了”， 我听到这个消息，心想我表（zhuang）现（bi）的机会来了。那个时候我是一个比现在还菜的菜鸟，并且大部分时间在写JavaScript，所以我后面解决问题时所用到的工具，其实我之前根本就没听过，因此这次解决问题的思路可能更值得记录。我的思路是这样的：1. 使用top查看系统的资源占用情况 连到生产服务器，执行top命令，发现双核的CPU几乎全被一个PID为5739的进程给用掉了，99.2%的用户空间（也可以叫用户态）消耗，极有可能是出现了死循环。Java应用造成us高的主要原因是线程一直处于可运行（Runnable）状态，通常这些线程在执行无阻塞操作、循环、正则或纯粹的计算等任务，另一个可能造成us高的原因是频繁GC。2. 使用ps命令查看进程对应的是哪个程序 可以看出，罪魁祸首是ccbs。这里也可以使用jps命令。3. 使用top -p [PID] -H 观察该进程中所有线程的资源占用 执行 top -p 5739 -H   参数 说明     -p 需要监控的进程id   -H 显示每个线程的情况，否则就是进程的总状态    发现若干线程实时CPU占用率（%CPU）较高，并且处理机使用时间（TIME&#43;）非常长，6146线程实际占有处理机852分钟40.44秒，那么如何知道这个线程正在干嘛呢？我猜测Java这么成熟的平台，肯定有可以解决问题的工具，毕竟这样的问题很多人都会遇到。4.使用jstack查看线程快照 通过在搜索引擎中查找，我得知通过jstack可以生成java虚拟机当前时刻的线程快照。执行jstack 5739 | grep -A 100 nid=0x1802jstack后面的参数是PID的值，nid的含义是操作系统映射的线程id，可以通过nid的值过滤上面占用CPU较高的6146线程，线程id需要转成十六进制，并且字母要小写。通过观察输出，可以看到线程长期处于可运行状态，直接根据堆栈信息找到对应的代码。5.解决bug 这部分代码并不是我写的，很明显这种写法非常不好，一旦serviceAddressType的值不在那三种范围内，就会产生死循环，我重写了这里的逻辑，问题解决。总结  任何数据都可能出错，程序逻辑应该充分考虑出现问题的可能。 我们遇到的问题，很可能别人也遇到过，要擅于使用搜索引擎。  ">
+
+<meta property="og:title" content="Java CPU占用过高故障排除 - 大峰哥的博客">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://dafengge0913.github.io/java-high-cpu-troubleshooting/">
+<meta property="og:image" content="https://dafengge0913.github.io/images/default.png">
+<meta property="og:site_name" content="大峰哥的博客">
+<meta property="og:description" content=" 哎&amp;hellip;最近又被策划坑了，因为配置错误，导致程序出现了死循环。当然，这也不能全怪策划，归根结底还是我代码的健壮性不够。在排除问题的过程中，我参考了之前解决类似问题时的笔记，最近正好开始写博客了，所以就整理了一下，并且那次出问题的代码也更好理解一些。故事发生在四年前的一个下午当时没有什么开发任务，正在刷V2EX，就听Fu老大说，“上边安排给咱们一个任务，说是生产服务器的CPU占用，有时候会突然上涨到100%，别的组都查不到原因，也复现不了问题，现在服务器又出问题了，任务交给咱们组了”， 我听到这个消息，心想我表（zhuang）现（bi）的机会来了。那个时候我是一个比现在还菜的菜鸟，并且大部分时间在写JavaScript，所以我后面解决问题时所用到的工具，其实我之前根本就没听过，因此这次解决问题的思路可能更值得记录。我的思路是这样的：1. 使用top查看系统的资源占用情况 连到生产服务器，执行top命令，发现双核的CPU几乎全被一个PID为5739的进程给用掉了，99.2%的用户空间（也可以叫用户态）消耗，极有可能是出现了死循环。Java应用造成us高的主要原因是线程一直处于可运行（Runnable）状态，通常这些线程在执行无阻塞操作、循环、正则或纯粹的计算等任务，另一个可能造成us高的原因是频繁GC。2. 使用ps命令查看进程对应的是哪个程序 可以看出，罪魁祸首是ccbs。这里也可以使用jps命令。3. 使用top -p [PID] -H 观察该进程中所有线程的资源占用 执行 top -p 5739 -H   参数 说明     -p 需要监控的进程id   -H 显示每个线程的情况，否则就是进程的总状态    发现若干线程实时CPU占用率（%CPU）较高，并且处理机使用时间（TIME&#43;）非常长，6146线程实际占有处理机852分钟40.44秒，那么如何知道这个线程正在干嘛呢？我猜测Java这么成熟的平台，肯定有可以解决问题的工具，毕竟这样的问题很多人都会遇到。4.使用jstack查看线程快照 通过在搜索引擎中查找，我得知通过jstack可以生成java虚拟机当前时刻的线程快照。执行jstack 5739 | grep -A 100 nid=0x1802jstack后面的参数是PID的值，nid的含义是操作系统映射的线程id，可以通过nid的值过滤上面占用CPU较高的6146线程，线程id需要转成十六进制，并且字母要小写。通过观察输出，可以看到线程长期处于可运行状态，直接根据堆栈信息找到对应的代码。5.解决bug 这部分代码并不是我写的，很明显这种写法非常不好，一旦serviceAddressType的值不在那三种范围内，就会产生死循环，我重写了这里的逻辑，问题解决。总结  任何数据都可能出错，程序逻辑应该充分考虑出现问题的可能。 我们遇到的问题，很可能别人也遇到过，要擅于使用搜索引擎。  ">
+<meta property="og:locale" content="zh_CN">
+
+
+<script type="application/ld+json">
+</script>
+
+
+    <link href="https://dafengge0913.github.io/css/styles.css" rel="stylesheet">
+    
+
+  </head>
+
+  <body>
+    <header class="l-header">
+      <nav class="navbar navbar-inverse">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://dafengge0913.github.io/">大峰哥的博客</a>
+          </div>
+
+          
+
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div class="container">
+        
+<div class="row">
+  <div class="col-md-8">
+
+    <nav class="p-crumb">
+      <ol class="breadcrumb">
+        <li><a href="https://dafengge0913.github.io/"><i class="fa fa-home" aria-hidden="true"></i></a></li>
+        
+        <li class="active">Java CPU占用过高故障排除</li>
+      </ol>
+    </nav>
+
+    <article class="single">
+  <header>
+    <ul class="p-facts">
+      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2018-08-11T14:21:23JST">2018-08-11</time></li>
+      
+      
+    </ul>
+
+    <h1 class="title">Java CPU占用过高故障排除</h1>
+  </header>
+
+  
+
+  <div class="article-body">
+
+<p>哎&hellip;最近又被策划坑了，因为配置错误，导致程序出现了死循环。当然，这也不能全怪策划，归根结底还是我代码的健壮性不够。<br />
+在排除问题的过程中，我参考了之前解决类似问题时的笔记，最近正好开始写博客了，所以就整理了一下，并且那次出问题的代码也更好理解一些。</p>
+
+<p><strong>故事发生在四年前的一个下午</strong><br />
+当时没有什么开发任务，正在刷V2EX，就听Fu老大说，“上边安排给咱们一个任务，说是生产服务器的CPU占用，有时候会突然上涨到100%，别的组都查不到原因，也复现不了问题，现在服务器又出问题了，任务交给咱们组了”，
+我听到这个消息，心想我表（zhuang）现（bi）的机会来了。<br />
+那个时候我是一个比现在还菜的菜鸟，并且大部分时间在写JavaScript，所以我后面解决问题时所用到的工具，其实我之前根本就没听过，因此这次解决问题的思路可能更值得记录。</p>
+
+<p><strong>我的思路是这样的：</strong></p>
+
+<h3 id="1-使用top查看系统的资源占用情况">1. 使用top查看系统的资源占用情况</h3>
+
+<p><img src="/image/java-high-cpu-troubleshooting/top.png" alt="top" /><br />
+连到生产服务器，执行top命令，发现双核的CPU几乎全被一个PID为5739的进程给用掉了，99.2%的用户空间（也可以叫用户态）消耗，极有可能是出现了死循环。<br />
+Java应用造成us高的主要原因是线程一直处于可运行（Runnable）状态，通常这些线程在执行无阻塞操作、循环、正则或纯粹的计算等任务，另一个可能造成us高的原因是频繁GC。</p>
+
+<h3 id="2-使用ps命令查看进程对应的是哪个程序">2. 使用ps命令查看进程对应的是哪个程序</h3>
+
+<p><img src="/image/java-high-cpu-troubleshooting/ps.png" alt="ps" /><br />
+可以看出，罪魁祸首是ccbs。这里也可以使用jps命令。</p>
+
+<h3 id="3-使用top-p-pid-h-观察该进程中所有线程的资源占用">3. 使用top -p [PID] -H 观察该进程中所有线程的资源占用</h3>
+
+<p>执行 top -p 5739 -H<br />
+<img src="/image/java-high-cpu-troubleshooting/top-p-H.png" alt="top -p -H" /></p>
+
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>-p</td>
+<td>需要监控的进程id</td>
+</tr>
+
+<tr>
+<td>-H</td>
+<td>显示每个线程的情况，否则就是进程的总状态</td>
+</tr>
+</tbody>
+</table>
+
+<p>发现若干线程实时CPU占用率（%CPU）较高，并且处理机使用时间（TIME+）非常长，6146线程实际占有处理机852分钟40.44秒，那么如何知道这个线程正在干嘛呢？<strong>我猜测Java这么成熟的平台，肯定有可以解决问题的工具，毕竟这样的问题很多人都会遇到</strong>。</p>
+
+<h3 id="4-使用jstack查看线程快照">4.使用jstack查看线程快照</h3>
+
+<p>通过在搜索引擎中查找，我得知通过jstack可以生成java虚拟机当前时刻的线程快照。<br />
+执行jstack 5739 | grep -A 100 nid=0x1802<br />
+<img src="/image/java-high-cpu-troubleshooting/jstack.png" alt="jstack" /><br />
+jstack后面的参数是PID的值，nid的含义是操作系统映射的线程id，可以通过nid的值过滤上面占用CPU较高的6146线程，<strong>线程id需要转成十六进制，并且字母要小写</strong>。<br />
+通过观察输出，可以看到线程长期处于可运行状态，直接根据堆栈信息找到对应的代码。</p>
+
+<h3 id="5-解决bug">5.解决bug</h3>
+
+<p><img src="/image/java-high-cpu-troubleshooting/code.png" alt="code" /><br />
+这部分代码并不是我写的，很明显这种写法非常不好，一旦serviceAddressType的值不在那三种范围内，就会产生死循环，我重写了这里的逻辑，问题解决。</p>
+
+<h3 id="总结">总结</h3>
+
+<ul>
+<li>任何数据都可能出错，程序逻辑应该充分考虑出现问题的可能。</li>
+<li>我们遇到的问题，很可能别人也遇到过，要擅于使用搜索引擎。</li>
+</ul>
+</div>
+
+  <footer class="article-footer">
+    
+    
+    
+    <section class="bordered">
+      <header>
+        <div class="panel-title">TAGS</div>
+      </header>
+      <div>
+        <ul class="p-terms">
+          
+          <li><a href="https://dafengge0913.github.io/tags/java/">java</a></li>
+          
+          <li><a href="https://dafengge0913.github.io/tags/jvm/">jvm</a></li>
+          
+        </ul>
+      </div>
+    </section>
+    
+    
+  </footer>
+
+</article>
+
+
+    
+  </div>
+
+  <div class="col-md-4">
+    
+<aside class="l-sidebar">
+
+  
+  <section class="panel panel-default">
+    <div class="panel-heading">
+      <div class="panel-title">TAG</div>
+    </div>
+    <div class="list-group">
+      
+      <a href="https://dafengge0913.github.io/tags/java" class="list-group-item">java</a>
+      
+      <a href="https://dafengge0913.github.io/tags/jvm" class="list-group-item">jvm</a>
+      
+      <a href="https://dafengge0913.github.io/tags/test" class="list-group-item">test</a>
+      
+    </div>
+  </section>
+  
+
+</aside>
+
+
+  </div>
+</div>
+
+      </div>
+    </main>
+
+    <footer class="l-footer">
+      <div class="container">
+      </div>
+    </footer>
+
+    <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/go.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/gradle.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+    $(function() { $('table').addClass('table'); })
+    </script>
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?78bdf940b9a9871ec1396580cc2fca94";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>      
+  </body>
+</html>
+
