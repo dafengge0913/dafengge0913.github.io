@@ -35,6 +35,18 @@
           </div>
 
           
+          <div id="navbar" class="collapse navbar-collapse">
+            
+            <ul class="nav navbar-nav navbar-right">
+              
+              
+              <li><a href="/about">关于我</a></li>
+              
+              
+            </ul>
+            
+          </div>
+          
 
         </div>
       </nav>
@@ -47,8 +59,8 @@
   <div class="col-md-8">
 
     
-
     <ul class="p-articles">
+      
       
       <li><article class="li">
   <header>
@@ -61,25 +73,20 @@
   </header>
 
   
-  <div class="summary"> 哎&hellip;最近又被策划坑了，因为配置错误，导致程序出现了死循环。当然，这也不能全怪策划，归根结底还是我代码的健壮性不够。
+  <div class="summary">
+    
+      哎&hellip;最近又被策划坑了，因为配置错误，导致程序出现了死循环。当然，这也不能全怪策划，归根结底还是我代码的健壮性不够。
 在排除问题的过程中，我参考了之前解决类似问题时的笔记，最近正好开始写博客了，所以就整理了一下，并且那次出问题的代码也更好理解一些。
 故事发生在四年前的一个下午
 当时没有什么开发任务，正在刷V2EX，就听Fu老大说，“上边安排给咱们一个任务，说是生产服务器的CPU占用，有时候会突然上涨到100%，别的组都查不到原因，也复现不了问题，现在服务器又出问题了，任务交给咱们组了”， 我听到这个消息，心想我表（zhuang）现（bi）的机会来了。
-那个时候我是一个比现在还菜的菜鸟，并且大部分时间在写JavaScript，所以我后面解决问题时所用到的工具，其实我之前根本就没听过，因此这次解决问题的思路可能更值得记录。
-我的思路是这样的：
-1. 使用top查看系统的资源占用情况 连到生产服务器，执行top命令，发现双核的CPU几乎全被一个PID为5739的进程给用掉了，99.2%的用户空间（也可以叫用户态）消耗，极有可能是出现了死循环。
-Java应用造成us高的主要原因是线程一直处于可运行（Runnable）状态，通常这些线程在执行无阻塞操作、循环、正则或纯粹的计算等任务，另一个可能造成us高的原因是频繁GC。
-2. 使用ps命令查看进程对应的是哪个程序 可以看出，罪魁祸首是ccbs。这里也可以使用jps命令。
-3. 使用top -p [PID] -H 观察该进程中所有线程的资源占用 执行 top -p 5739 -H
-   参数 说明     -p 需要监控的进程id   -H 显示每个线程的情况，否则就是进程的总状态    发现若干线程实时CPU占用率（%CPU）较高，并且处理机使用时间（TIME+）非常长，6146线程实际占有处理机852分钟40.44秒，那么如何知道这个线程正在干嘛呢？我猜测Java这么成熟的平台，肯定有可以解决问题的工具，毕竟这样的问题很多人都会遇到。
-4.使用jstack查看线程快照 通过在搜索引擎中查找，我得知通过jstack可以生成java虚拟机当前时刻的线程快照。
-执行jstack 5739 | grep -A 100 nid=0x1802
-jstack后面的参数是PID的值，nid的含义是操作系统映射的线程id，可以通过nid的值过滤上面占用CPU较高的6146线程，线程id需要转成十六进制，并且字母要小写。
-通过观察输出，可以看到线程长期处于可运行状态，直接根据堆栈信息找到对应的代码。
-5.解决bug 这部分代码并不是我写的，很明显这种写法非常不好，一旦serviceAddressType的值不在那三种范围内，就会产生死循环，我重写了这里的逻辑，问题解决。
-总结  任何数据都可能出错，程序逻辑应该充分考虑出现问题的可能。 我们遇到的问题，很可能别人也遇到过，要擅于使用搜索引擎。  </div>
+那个时候我是一个比现在还菜的
+    
+  </div>
 
-  
+  <footer>
+    <a href="https://dafengge0913.github.io/java-high-cpu-troubleshooting/" title="Java CPU占用过高故障排除">阅读全文…</a>
+  </footer>
+
 </article>
 </li>
       
@@ -94,25 +101,19 @@ jstack后面的参数是PID的值，nid的含义是操作系统映射的线程id
   </header>
 
   
-  <div class="summary">为什么需要Benchmark工具 如果想要知道一段代码的性能如何，一种常用的做法可能是这样的：
-long start = System.currentTimeMillis(); // do something ... System.out.println(System.currentTimeMillis() - start);  这样做，存在几个问题：
+  <div class="summary">
+    
+      为什么需要Benchmark工具 如果想要知道一段代码的性能如何，一种常用的做法可能是这样的：
+long start = System.currentTimeMillis(); // do something &hellip; System.out.println(System.currentTimeMillis() - start);  这样做，存在几个问题：
  结果不够精确
-首先，System.currentTimeMillis() 的注释里明确表示了，根据操作系统的不同，会存在数十毫秒的误差。虽然这个问题比较容易解决，但是造成测试结果不精确的主要原因并不是时间函数的误差，而是JVM和JIT在运行时会对Java应用进行大量的优化，比如某个计算的结果并没有被使用，那么这段代码在执行时就会被忽略，这样的问题比较难察觉。 统计结果有限
-如果需要打印多种类型的测试数据，就需要增加很多额外的代码。 配置不灵活
-不容易修改测试的类型和条件。
-  因此，使用一款靠谱的benchmark工具，既可以减少工作量，又可以确保性能优化过程不被错误的测试数据误导。
-之前使用Golang开发的时候，SDK自带的benchmark就非常好用。转到Java栈之后，我也想找一款好用的benchmark工具，后来通过《Effective Java》了解到了JMH。
-JMH概述 JMH 即Java Microbenchmark Harness，是用于代码微基准测试的工具套件，由JIT的开发人员编写，他们应该比任何人都了解JIT对于测试的影响。
-JMH可以精确测量方法在不同输入参数情况下的执行时间和吞吐量。
-一个例子 这里使用Gradle来搭建测试环境，首先在build.gradle中添加依赖：
-testCompile 'org.openjdk.jmh:jmh-core:jar:1.21' testCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.21'  编写一个简单的类，测试两种字符串连接操作的性能：
-package com.dafengge0913.benchmark; import org.openjdk.jmh.annotations.*; import org.openjdk.jmh.infra.Blackhole; import org.openjdk.jmh.runner.Runner; import org.openjdk.jmh.runner.RunnerException; import org.openjdk.jmh.runner.options.Options; import org.openjdk.jmh.runner.options.OptionsBuilder; import java.util.concurrent.TimeUnit; @BenchmarkMode({Mode.AverageTime, Mode.Throughput}) @Warmup(iterations = 1) @Measurement(iterations = 2, time = 1) @OutputTimeUnit(TimeUnit.</div>
+首先，System.currentTimeMillis() 的注释里明确表示了，根据操作系统的不同，会存在数十毫秒的误差。虽然这个问题比较容易解决，但是造成测试结果不精确的主要原因并不是时间函数的误差，而是JVM和JIT在运行时
+    
+  </div>
 
-  
   <footer>
-    <a href="https://dafengge0913.github.io/jmh/" title="Java benchmark 工具 JMH">Read More…</a>
+    <a href="https://dafengge0913.github.io/jmh/" title="Java benchmark 工具 JMH">阅读全文…</a>
   </footer>
-  
+
 </article>
 </li>
       

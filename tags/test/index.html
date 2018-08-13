@@ -35,6 +35,18 @@
           </div>
 
           
+          <div id="navbar" class="collapse navbar-collapse">
+            
+            <ul class="nav navbar-nav navbar-right">
+              
+              
+              <li><a href="/about">关于我</a></li>
+              
+              
+            </ul>
+            
+          </div>
+          
 
         </div>
       </nav>
@@ -51,8 +63,8 @@
       <h1>Test</h1>
     </header>
     
-
     <ul class="p-articles">
+      
       
       <li><article class="li">
   <header>
@@ -65,25 +77,19 @@
   </header>
 
   
-  <div class="summary">为什么需要Benchmark工具 如果想要知道一段代码的性能如何，一种常用的做法可能是这样的：
-long start = System.currentTimeMillis(); // do something ... System.out.println(System.currentTimeMillis() - start);  这样做，存在几个问题：
+  <div class="summary">
+    
+      为什么需要Benchmark工具 如果想要知道一段代码的性能如何，一种常用的做法可能是这样的：
+long start = System.currentTimeMillis(); // do something &hellip; System.out.println(System.currentTimeMillis() - start);  这样做，存在几个问题：
  结果不够精确
-首先，System.currentTimeMillis() 的注释里明确表示了，根据操作系统的不同，会存在数十毫秒的误差。虽然这个问题比较容易解决，但是造成测试结果不精确的主要原因并不是时间函数的误差，而是JVM和JIT在运行时会对Java应用进行大量的优化，比如某个计算的结果并没有被使用，那么这段代码在执行时就会被忽略，这样的问题比较难察觉。 统计结果有限
-如果需要打印多种类型的测试数据，就需要增加很多额外的代码。 配置不灵活
-不容易修改测试的类型和条件。
-  因此，使用一款靠谱的benchmark工具，既可以减少工作量，又可以确保性能优化过程不被错误的测试数据误导。
-之前使用Golang开发的时候，SDK自带的benchmark就非常好用。转到Java栈之后，我也想找一款好用的benchmark工具，后来通过《Effective Java》了解到了JMH。
-JMH概述 JMH 即Java Microbenchmark Harness，是用于代码微基准测试的工具套件，由JIT的开发人员编写，他们应该比任何人都了解JIT对于测试的影响。
-JMH可以精确测量方法在不同输入参数情况下的执行时间和吞吐量。
-一个例子 这里使用Gradle来搭建测试环境，首先在build.gradle中添加依赖：
-testCompile 'org.openjdk.jmh:jmh-core:jar:1.21' testCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.21'  编写一个简单的类，测试两种字符串连接操作的性能：
-package com.dafengge0913.benchmark; import org.openjdk.jmh.annotations.*; import org.openjdk.jmh.infra.Blackhole; import org.openjdk.jmh.runner.Runner; import org.openjdk.jmh.runner.RunnerException; import org.openjdk.jmh.runner.options.Options; import org.openjdk.jmh.runner.options.OptionsBuilder; import java.util.concurrent.TimeUnit; @BenchmarkMode({Mode.AverageTime, Mode.Throughput}) @Warmup(iterations = 1) @Measurement(iterations = 2, time = 1) @OutputTimeUnit(TimeUnit.</div>
+首先，System.currentTimeMillis() 的注释里明确表示了，根据操作系统的不同，会存在数十毫秒的误差。虽然这个问题比较容易解决，但是造成测试结果不精确的主要原因并不是时间函数的误差，而是JVM和JIT在运行时
+    
+  </div>
 
-  
   <footer>
-    <a href="https://dafengge0913.github.io/jmh/" title="Java benchmark 工具 JMH">Read More…</a>
+    <a href="https://dafengge0913.github.io/jmh/" title="Java benchmark 工具 JMH">阅读全文…</a>
   </footer>
-  
+
 </article>
 </li>
       

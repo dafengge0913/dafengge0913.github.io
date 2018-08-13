@@ -57,5 +57,16 @@ testCompile &#39;org.openjdk.jmh:jmh-core:jar:1.21&#39; testCompile &#39;org.ope
 package com.dafengge0913.benchmark; import org.openjdk.jmh.annotations.*; import org.openjdk.jmh.infra.Blackhole; import org.openjdk.jmh.runner.Runner; import org.openjdk.jmh.runner.RunnerException; import org.openjdk.jmh.runner.options.Options; import org.openjdk.jmh.runner.options.OptionsBuilder; import java.util.concurrent.TimeUnit; @BenchmarkMode({Mode.AverageTime, Mode.Throughput}) @Warmup(iterations = 1) @Measurement(iterations = 2, time = 1) @OutputTimeUnit(TimeUnit.</description>
     </item>
     
+    <item>
+      <title>关于我</title>
+      <link>https://dafengge0913.github.io/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://dafengge0913.github.io/about/</guid>
+      <description>大峰哥 东北人 90后 后端打杂程序员
+大峰哥是我大学同学给我起的绰号 也是我诸多绰号中 听起来最带感的一个
+本站文章除非特殊标注均为原创 转载请注明出处</description>
+    </item>
+    
   </channel>
 </rss>
