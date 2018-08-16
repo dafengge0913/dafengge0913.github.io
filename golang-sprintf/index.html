@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="pinterest" content="nopin">
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+<meta name="generator" content="Hugo 0.45.1" />
+
+<link rel="canonical" href="https://dafengge0913.github.io/golang-sprintf/">
+
+
+    <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.12.0/styles/darcula.min.css">
+    
+    <title>Golang Sprintf 源码分析 - 大峰哥的博客</title>
+    
+<meta name="description" content="昨天晚上在地铁上，看了一篇公众号推送的文章—— 深度 | 从Go高性能日志库zap看如何实现高性能Go组件。文章里提到了日志库使用fmt.Sprintf带来的性能问题。我之前也写过一个基于fmt.Sprintf的日志小轮子，当时也没有太关注这个方法的具体实现，今天有空，就稍微深入的研究一下源码吧。我使用的go版本 go version go1.10.3 windows/amd64  一个简单的例子 package main import ( &amp;quot;os&amp;quot; &amp;quot;log&amp;quot; &amp;quot;runtime/pprof&amp;quot; &amp;quot;time&amp;quot; &amp;quot;fmt&amp;quot; ) type point struct { x int y int } func main() { f, err := os.Create(&amp;quot;sprintf_cpu.prof&amp;quot;) if err != nil { log.Fatal(&amp;quot;could not create CPU profile: &amp;quot;, err) } if err := pprof.StartCPUProfile(f); err != nil { log.Fatal(&amp;quot;could not start CPU profile: &amp;quot;, err) } defer pprof.StopCPUProfile() n := 10000000 startT := time.">
+
+<meta property="og:title" content="Golang Sprintf 源码分析 - 大峰哥的博客">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://dafengge0913.github.io/golang-sprintf/">
+<meta property="og:image" content="https://dafengge0913.github.io/images/default.png">
+<meta property="og:site_name" content="大峰哥的博客">
+<meta property="og:description" content="昨天晚上在地铁上，看了一篇公众号推送的文章—— 深度 | 从Go高性能日志库zap看如何实现高性能Go组件。文章里提到了日志库使用fmt.Sprintf带来的性能问题。我之前也写过一个基于fmt.Sprintf的日志小轮子，当时也没有太关注这个方法的具体实现，今天有空，就稍微深入的研究一下源码吧。我使用的go版本 go version go1.10.3 windows/amd64  一个简单的例子 package main import ( &amp;quot;os&amp;quot; &amp;quot;log&amp;quot; &amp;quot;runtime/pprof&amp;quot; &amp;quot;time&amp;quot; &amp;quot;fmt&amp;quot; ) type point struct { x int y int } func main() { f, err := os.Create(&amp;quot;sprintf_cpu.prof&amp;quot;) if err != nil { log.Fatal(&amp;quot;could not create CPU profile: &amp;quot;, err) } if err := pprof.StartCPUProfile(f); err != nil { log.Fatal(&amp;quot;could not start CPU profile: &amp;quot;, err) } defer pprof.StopCPUProfile() n := 10000000 startT := time.">
+<meta property="og:locale" content="zh_CN">
+
+
+<script type="application/ld+json">
+</script>
+
+
+    <link href="https://dafengge0913.github.io/css/styles.css" rel="stylesheet">
+    
+
+  </head>
+
+  <body>
+    <header class="l-header">
+      <nav class="navbar navbar-inverse">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://dafengge0913.github.io/">大峰哥的博客</a>
+          </div>
+
+          
+          <div id="navbar" class="collapse navbar-collapse">
+            
+            <ul class="nav navbar-nav navbar-right">
+              
+              
+              <li><a href="/about">关于我</a></li>
+              
+              
+            </ul>
+            
+          </div>
+          
+
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div class="container">
+        
+<div class="row">
+  <div class="col-md-8">
+
+    <nav class="p-crumb">
+      <ol class="breadcrumb">
+        <li><a href="https://dafengge0913.github.io/"><i class="fa fa-home" aria-hidden="true"></i></a></li>
+        
+        <li class="active">Golang Sprintf 源码分析</li>
+      </ol>
+    </nav>
+    <article class="single">
+  <header>
+    <ul class="p-facts">
+      
+      
+      
+    </ul>
+
+    <h1 class="title">Golang Sprintf 源码分析</h1>
+  </header>
+
+  
+
+  <div class="article-body">
+
+<p>昨天晚上在地铁上，看了一篇公众号推送的文章—— <a href="https://mp.weixin.qq.com/s?__biz=MzAwMDU1MTE1OQ==&amp;mid=2653550084&amp;idx=1&amp;sn=3ce56d376e48deaa2df39f547612e123&amp;chksm=813a679cb64dee8a2183a4b8261461f708e94567d4f55c5771c9858ca4fbbd3335d4e72dbf6b&amp;mpshare=1&amp;scene=23&amp;srcid=0815CBKG3GTGcCb9w7VvCY4F#rd">深度 | 从Go高性能日志库zap看如何实现高性能Go组件</a>。<br />
+文章里提到了日志库使用<code>fmt.Sprintf</code>带来的性能问题。我之前也写过一个基于<code>fmt.Sprintf</code>的日志小轮子，当时也没有太关注这个方法的具体实现，今天有空，就稍微深入的研究一下源码吧。</p>
+
+<h3 id="我使用的go版本">我使用的go版本</h3>
+
+<pre><code class="language-no-highlight">go version go1.10.3 windows/amd64
+</code></pre>
+
+<h3 id="一个简单的例子">一个简单的例子</h3>
+
+<pre><code class="language-golang">package main
+
+import (
+	&quot;os&quot;
+	&quot;log&quot;
+	&quot;runtime/pprof&quot;
+	&quot;time&quot;
+	&quot;fmt&quot;
+)
+
+type point struct {
+	x int
+	y int
+}
+
+func main() {
+
+	f, err := os.Create(&quot;sprintf_cpu.prof&quot;)
+	if err != nil {
+		log.Fatal(&quot;could not create CPU profile: &quot;, err)
+	}
+	if err := pprof.StartCPUProfile(f); err != nil {
+		log.Fatal(&quot;could not start CPU profile: &quot;, err)
+	}
+	defer pprof.StopCPUProfile()
+
+	n := 10000000
+	startT := time.Now()
+	p := point{1, 2}
+	for i := 0; i &lt; n; i++ {
+		//fmt.Sprintf(&quot;Number: %d&quot;, i)
+		fmt.Sprintf(&quot;Point: %v&quot;, p)
+	}
+	t := time.Now().Sub(startT).Nanoseconds()
+	fmt.Printf(&quot;Running in %d nanoseconds \n&quot;, t)
+	fmt.Printf(&quot;%d nanoseconds per operation \n&quot;, t/int64(n))
+}
+
+</code></pre>
+
+<p>执行结果：</p>
+
+<pre><code class="language-no-highlight">Running in 2392430400 nanoseconds
+239 nanoseconds per operation
+</code></pre>
+
+<p>来看一下pprof：</p>
+
+<p>go.exe tool pprof .\main.exe .\sprintf_cpu.prof</p>
+
+<pre><code class="language-no-highlight">(pprof) top
+Showing nodes accounting for 1410ms, 58.75% of 2400ms total
+Dropped 21 nodes (cum &lt;= 12ms)
+Showing top 10 nodes out of 41
+      flat  flat%   sum%        cum   cum%
+     310ms 12.92% 12.92%     1030ms 42.92%  fmt.(*pp).printValue
+     290ms 12.08% 25.00%      310ms 12.92%  runtime.mallocgc
+     160ms  6.67% 31.67%      250ms 10.42%  fmt.(*fmt).fmt_integer
+     140ms  5.83% 37.50%     1540ms 64.17%  fmt.(*pp).doPrintf
+     100ms  4.17% 41.67%      100ms  4.17%  reflect.Value.Field
+      90ms  3.75% 45.42%       90ms  3.75%  runtime.(*itabTableType).find
+      80ms  3.33% 48.75%      280ms 11.67%  fmt.(*pp).handleMethods
+      80ms  3.33% 52.08%     1400ms 58.33%  fmt.(*pp).printArg
+      80ms  3.33% 55.42%      180ms  7.50%  fmt.getField
+      80ms  3.33% 58.75%       80ms  3.33%  runtime.memmove
+</code></pre>
+
+<h3 id="sprintf">Sprintf</h3>
+
+<p>Sprintf函数的实现非常简单 一共只有7行代码：</p>
+
+<pre><code class="language-golang">func Sprintf(format string, a ...interface{}) string {
+	p := newPrinter() // [1]
+	p.doPrintf(format, a) // [2]
+	s := string(p.buf) // [3]
+	p.free() // [4]
+	return s
+}
+</code></pre>
+
+<p>[1] 调用<code>newPrinter()</code>从对象池中获取一个<code>pp</code>对象，如果没有就创建一个新的。<code>pp</code>用来保存打印时的状态信息。</p>
+
+<pre><code class="language-golang">// newPrinter allocates a new pp struct or grabs a cached one.
+func newPrinter() *pp {
+	p := ppFree.Get().(*pp)
+	p.panicking = false
+	p.erroring = false
+	p.fmt.init(&amp;p.buf)
+	return p
+}
+</code></pre>
+
+<p>[2] <code>doPrintf</code>是核心的打印方法，后面具体分析。<br />
+[3] 把缓冲在<code>p.buf</code>中的内容转换成string。<br />
+[4] 重置<code>pp</code>中的状态，并把<code>pp</code>放入<code>ppFree</code>缓冲池。</p>
+
+<pre><code class="language-golang">// free saves used pp structs in ppFree; avoids an allocation per invocation.
+func (p *pp) free() {
+	p.buf = p.buf[:0]
+	p.arg = nil
+	p.value = reflect.Value{}
+	ppFree.Put(p)
+}
+</code></pre>
+
+<h3 id="doprintf">doPrintf</h3>
+
+<p>为了方便阅读，我加了一些中文注释</p>
+
+<pre><code class="language-golang">func (p *pp) doPrintf(format string, a []interface{}) {
+	end := len(format)
+	argNum := 0         // we process one argument per non-trivial format
+	afterIndex := false // previous item in format was an index like [3].
+	p.reordered = false
+formatLoop:
+	for i := 0; i &lt; end; {
+		p.goodArgNum = true
+		lasti := i
+		for i &lt; end &amp;&amp; format[i] != '%' {
+			i++ // 一直累加 直到遇到 ‘%’ 或者到达format的末尾
+		}
+		if i &gt; lasti {
+			p.buf.WriteString(format[lasti:i]) // 输出普通字符
+		}
+		if i &gt;= end {
+			// done processing format string
+			break
+		}
+
+		// Process one verb
+		i++ // 将索引后移 比如遇到了%d 那么i++之后就会指向d
+
+		// Do we have flags?
+		p.fmt.clearflags() // 确保fmtFlags被清空 可能并不需要这么做 但是加上比较稳妥
+	simpleFormat:
+		for ; i &lt; end; i++ {
+			c := format[i]
+            // 记录 '#' '0' '+' '-' ' ' 标记 在打印不同类型的地方 会根据标记 有不同的处理
+			switch c {
+			case '#':
+				p.fmt.sharp = true
+			case '0':
+				p.fmt.zero = !p.fmt.minus // Only allow zero padding to the left.
+			case '+':
+				p.fmt.plus = true
+			case '-':
+				p.fmt.minus = true
+				p.fmt.zero = false // Do not pad with zeros to the right.
+			case ' ':
+				p.fmt.space = true
+			default:
+				// Fast path for common case of ascii lower case simple verbs
+				// without precision or width or argument indices.
+				if 'a' &lt;= c &amp;&amp; c &lt;= 'z' &amp;&amp; argNum &lt; len(a) {
+					// %v 打印值的默认格式
+					if c == 'v' {
+						// %+v 如果是结构体 打印字段名
+						// Go syntax
+						p.fmt.sharpV = p.fmt.sharp
+						p.fmt.sharp = false
+						// %#v 用go的语法格式打印
+						// Struct-field syntax
+						p.fmt.plusV = p.fmt.plus
+						p.fmt.plus = false
+					}
+					// 打印参数
+					p.printArg(a[argNum], rune(c))
+					argNum++
+					i++
+					continue formatLoop
+				}
+				// Format is more complex than simple flags and a verb or is malformed.
+				break simpleFormat
+			}
+		}
+
+		// 处理使用[] 指定参数值索引的情况
+		// Do we have an explicit argument index?
+		argNum, i, afterIndex = p.argNumber(argNum, format, i, len(a))
+
+		// ‘*’ 通过参数指定宽度或精度
+		// Do we have width?
+		if i &lt; end &amp;&amp; format[i] == '*' {
+			i++
+			p.fmt.wid, p.fmt.widPresent, argNum = intFromArg(a, argNum)
+
+			if !p.fmt.widPresent {
+				p.buf.WriteString(badWidthString)
+			}
+
+			// We have a negative width, so take its value and ensure
+			// that the minus flag is set
+			if p.fmt.wid &lt; 0 {
+				p.fmt.wid = -p.fmt.wid
+				p.fmt.minus = true
+				p.fmt.zero = false // Do not pad with zeros to the right.
+			}
+			afterIndex = false
+		} else {
+			// 使用数字指定宽度
+			p.fmt.wid, p.fmt.widPresent, i = parsenum(format, i, end)
+			if afterIndex &amp;&amp; p.fmt.widPresent { // &quot;%[3]2d&quot;
+				p.goodArgNum = false
+			}
+        }
+		
+		// 处理精度
+		// Do we have precision?
+		if i+1 &lt; end &amp;&amp; format[i] == '.' {
+			i++
+			if afterIndex { // &quot;%[3].2d&quot;
+				p.goodArgNum = false
+			}
+			argNum, i, afterIndex = p.argNumber(argNum, format, i, len(a))
+			if i &lt; end &amp;&amp; format[i] == '*' {
+				i++
+				p.fmt.prec, p.fmt.precPresent, argNum = intFromArg(a, argNum)
+				// Negative precision arguments don't make sense
+				if p.fmt.prec &lt; 0 {
+					p.fmt.prec = 0
+					p.fmt.precPresent = false
+				}
+				if !p.fmt.precPresent {
+					p.buf.WriteString(badPrecString)
+				}
+				afterIndex = false
+			} else {
+				p.fmt.prec, p.fmt.precPresent, i = parsenum(format, i, end)
+				if !p.fmt.precPresent {
+					p.fmt.prec = 0
+					p.fmt.precPresent = true
+				}
+			}
+		}
+
+		if !afterIndex {
+			argNum, i, afterIndex = p.argNumber(argNum, format, i, len(a))
+		}
+
+		if i &gt;= end {
+			p.buf.WriteString(noVerbString)
+			break
+		}
+
+		verb, size := rune(format[i]), 1
+		if verb &gt;= utf8.RuneSelf {
+			verb, size = utf8.DecodeRuneInString(format[i:])
+		}
+		i += size
+
+		switch {
+		case verb == '%': // Percent does not absorb operands and ignores f.wid and f.prec.
+			p.buf.WriteByte('%') // 使用 ‘%%’ 来打印 ‘%’
+		case !p.goodArgNum:
+			p.badArgNum(verb)
+		case argNum &gt;= len(a): // No argument left over to print for the current verb.
+			p.missingArg(verb) // 参数数量不足
+		case verb == 'v':
+			// Go syntax
+			p.fmt.sharpV = p.fmt.sharp
+			p.fmt.sharp = false
+			// Struct-field syntax
+			p.fmt.plusV = p.fmt.plus
+			p.fmt.plus = false
+			fallthrough
+		default:
+			p.printArg(a[argNum], verb)
+			argNum++
+		}
+	}
+
+	// 处理参数多于占位符的情况
+	// Check for extra arguments unless the call accessed the arguments
+	// out of order, in which case it's too expensive to detect if they've all
+	// been used and arguably OK if they're not.
+	if !p.reordered &amp;&amp; argNum &lt; len(a) {
+		p.fmt.clearflags()
+		p.buf.WriteString(extraString)
+		for i, arg := range a[argNum:] {
+			if i &gt; 0 {
+				p.buf.WriteString(commaSpaceString)
+			}
+			if arg == nil {
+				p.buf.WriteString(nilAngleString)
+			} else {
+				p.buf.WriteString(reflect.TypeOf(arg).String())
+				p.buf.WriteByte('=')
+				p.printArg(arg, 'v')
+			}
+		}
+		p.buf.WriteByte(')')
+	}
+}
+</code></pre>
+
+<h3 id="printarg">printArg</h3>
+
+<p>printArg接收两个参数<br />
+arg：参数值<br />
+verb：占位符类型<br />
+方法中通过switch参数的type，分别处理不同的参数类型。</p>
+
+<pre><code class="language-golang">func (p *pp) printArg(arg interface{}, verb rune) {
+	p.arg = arg
+	p.value = reflect.Value{}
+
+	if arg == nil {
+		switch verb {
+		case 'T', 'v':
+			p.fmt.padString(nilAngleString)
+		default:
+			p.badVerb(verb)
+		}
+		return
+	}
+
+	// Special processing considerations.
+	// %T (the value's type) and %p (its address) are special; we always do them first.
+	switch verb {
+	case 'T': // 打印类型
+		p.fmt.fmt_s(reflect.TypeOf(arg).String())
+		return
+	case 'p': // 打印指针
+		p.fmtPointer(reflect.ValueOf(arg), 'p')
+		return
+	}
+
+	// Some types can be done without reflection.
+	switch f := arg.(type) {
+	case bool:
+		p.fmtBool(f, verb)
+	case float32:
+		p.fmtFloat(float64(f), 32, verb)
+	case float64:
+		p.fmtFloat(f, 64, verb)
+	case complex64:
+		p.fmtComplex(complex128(f), 64, verb)
+	case complex128:
+		p.fmtComplex(f, 128, verb)
+	case int:
+		p.fmtInteger(uint64(f), signed, verb)
+	case int8:
+		p.fmtInteger(uint64(f), signed, verb)
+	case int16:
+		p.fmtInteger(uint64(f), signed, verb)
+	case int32:
+		p.fmtInteger(uint64(f), signed, verb)
+	case int64:
+		p.fmtInteger(uint64(f), signed, verb)
+	case uint:
+		p.fmtInteger(uint64(f), unsigned, verb)
+	case uint8:
+		p.fmtInteger(uint64(f), unsigned, verb)
+	case uint16:
+		p.fmtInteger(uint64(f), unsigned, verb)
+	case uint32:
+		p.fmtInteger(uint64(f), unsigned, verb)
+	case uint64:
+		p.fmtInteger(f, unsigned, verb)
+	case uintptr:
+		p.fmtInteger(uint64(f), unsigned, verb)
+	case string:
+		p.fmtString(f, verb)
+	case []byte:
+		p.fmtBytes(f, verb, &quot;[]byte&quot;)
+	case reflect.Value:
+		// Handle extractable values with special methods
+		// since printValue does not handle them at depth 0.
+		if f.IsValid() &amp;&amp; f.CanInterface() {
+			p.arg = f.Interface()
+			if p.handleMethods(verb) {
+				return
+			}
+		}
+		p.printValue(f, verb, 0)
+	default:
+		// If the type is not simple, it might have methods.
+		if !p.handleMethods(verb) {
+			// Need to use reflection, since the type had no
+			// interface methods that could be used for formatting.
+			p.printValue(reflect.ValueOf(f), verb, 0)
+		}
+	}
+}
+</code></pre>
+
+<h3 id="handlemethods">handleMethods</h3>
+
+<pre><code class="language-golang">func (p *pp) handleMethods(verb rune) (handled bool) {
+	if p.erroring {
+		return
+	}
+	// 参数类实现了Formatter接口 则调用Format方法
+	// Is it a Formatter?
+	if formatter, ok := p.arg.(Formatter); ok {
+		handled = true
+		defer p.catchPanic(p.arg, verb)
+		formatter.Format(p, verb)
+		return
+	}
+
+	// If we're doing Go syntax and the argument knows how to supply it, take care of it now.
+	if p.fmt.sharpV { // 如果使用%#v占位符
+		// 参数类实现了GoStringer接口 则调用GoString方法
+		if stringer, ok := p.arg.(GoStringer); ok {
+			handled = true
+			defer p.catchPanic(p.arg, verb)
+			// Print the result of GoString unadorned.
+			p.fmt.fmt_s(stringer.GoString())
+			return
+		}
+	} else {
+		// If a string is acceptable according to the format, see if
+		// the value satisfies one of the string-valued interfaces.
+		// Println etc. set verb to %v, which is &quot;stringable&quot;.
+		switch verb {
+			case 'v', 's', 'x', 'X', 'q':
+			// error 和 Stringer 按照字符串处理
+			// Is it an error or Stringer?
+			// The duplication in the bodies is necessary:
+			// setting handled and deferring catchPanic
+			// must happen before calling the method.
+			switch v := p.arg.(type) {
+			case error:
+				handled = true
+				defer p.catchPanic(p.arg, verb)
+				p.fmtString(v.Error(), verb)
+				return
+
+			case Stringer:
+				handled = true
+				defer p.catchPanic(p.arg, verb)
+				p.fmtString(v.String(), verb)
+				return
+			}
+		}
+	}
+	// 返回true 表示参数已经被处理
+	return false
+}
+</code></pre>
+
+<h3 id="fmtinteger">fmtInteger</h3>
+
+<p>printArg 方法中根据参数类型会有不用的处理方法，这里以<code>fmtInteger</code>为例。<br />
+<code>fmtInteger</code>中会把占位符转换成对应的进制，作为参数调用<code>fmt_integer</code>。</p>
+
+<pre><code class="language-golang">// fmtInteger formats a signed or unsigned integer.
+func (p *pp) fmtInteger(v uint64, isSigned bool, verb rune) {
+	switch verb {
+	case 'v':
+		if p.fmt.sharpV &amp;&amp; !isSigned {
+			p.fmt0x64(v, true)
+		} else {
+			p.fmt.fmt_integer(v, 10, isSigned, ldigits)
+		}
+	case 'd':
+		p.fmt.fmt_integer(v, 10, isSigned, ldigits)
+	case 'b':
+		p.fmt.fmt_integer(v, 2, isSigned, ldigits)
+	case 'o':
+		p.fmt.fmt_integer(v, 8, isSigned, ldigits)
+	case 'x':
+		p.fmt.fmt_integer(v, 16, isSigned, ldigits)
+	case 'X':
+		p.fmt.fmt_integer(v, 16, isSigned, udigits)
+	case 'c':
+		p.fmt.fmt_c(v)
+	case 'q':
+		if v &lt;= utf8.MaxRune {
+			p.fmt.fmt_qc(v)
+		} else {
+			p.badVerb(verb)
+		}
+	case 'U':
+		p.fmt.fmt_unicode(v)
+	default:
+		p.badVerb(verb)
+	}
+}
+</code></pre>
+
+<h3 id="fmt-integer">fmt_integer</h3>
+
+<p><code>fmt_integer</code>中根据进制将数字转换成了字符串格式。（有点像OJ里面的热身题&hellip;）<br />
+最后调用<code>pad</code>写到缓冲中。</p>
+
+<pre><code class="language-golang">// fmt_integer formats signed and unsigned integers.
+func (f *fmt) fmt_integer(u uint64, base int, isSigned bool, digits string) {
+	negative := isSigned &amp;&amp; int64(u) &lt; 0
+	if negative {
+		u = -u
+	}
+
+	buf := f.intbuf[0:]
+	// The already allocated f.intbuf with a capacity of 68 bytes
+	// is large enough for integer formatting when no precision or width is set.
+	if f.widPresent || f.precPresent {
+		// Account 3 extra bytes for possible addition of a sign and &quot;0x&quot;.
+		width := 3 + f.wid + f.prec // wid and prec are always positive.
+		if width &gt; len(buf) {
+			// We're going to need a bigger boat.
+			buf = make([]byte, width)
+		}
+	}
+
+	// Two ways to ask for extra leading zero digits: %.3d or %03d.
+	// If both are specified the f.zero flag is ignored and
+	// padding with spaces is used instead.
+	prec := 0
+	if f.precPresent {
+		prec = f.prec
+		// Precision of 0 and value of 0 means &quot;print nothing&quot; but padding.
+		if prec == 0 &amp;&amp; u == 0 {
+			oldZero := f.zero
+			f.zero = false
+			f.writePadding(f.wid)
+			f.zero = oldZero
+			return
+		}
+	} else if f.zero &amp;&amp; f.widPresent {
+		prec = f.wid
+		if negative || f.plus || f.space {
+			prec-- // leave room for sign
+		}
+	}
+
+	// Because printing is easier right-to-left: format u into buf, ending at buf[i].
+	// We could make things marginally faster by splitting the 32-bit case out
+	// into a separate block but it's not worth the duplication, so u has 64 bits.
+	i := len(buf)
+	// Use constants for the division and modulo for more efficient code.
+	// Switch cases ordered by popularity.
+	switch base {
+	case 10:
+		for u &gt;= 10 {
+			i--
+			next := u / 10
+			buf[i] = byte('0' + u - next*10)
+			u = next
+		}
+	case 16:
+		for u &gt;= 16 {
+			i--
+			buf[i] = digits[u&amp;0xF]
+			u &gt;&gt;= 4
+		}
+	case 8:
+		for u &gt;= 8 {
+			i--
+			buf[i] = byte('0' + u&amp;7)
+			u &gt;&gt;= 3
+		}
+	case 2:
+		for u &gt;= 2 {
+			i--
+			buf[i] = byte('0' + u&amp;1)
+			u &gt;&gt;= 1
+		}
+	default:
+		panic(&quot;fmt: unknown base; can't happen&quot;)
+	}
+	i--
+	buf[i] = digits[u]
+	for i &gt; 0 &amp;&amp; prec &gt; len(buf)-i {
+		i--
+		buf[i] = '0'
+	}
+
+	// Various prefixes: 0x, -, etc.
+	if f.sharp {
+		switch base {
+		case 8:
+			if buf[i] != '0' {
+				i--
+				buf[i] = '0'
+			}
+		case 16:
+			// Add a leading 0x or 0X.
+			i--
+			buf[i] = digits[16]
+			i--
+			buf[i] = '0'
+		}
+	}
+
+	if negative {
+		i--
+		buf[i] = '-'
+	} else if f.plus {
+		i--
+		buf[i] = '+'
+	} else if f.space {
+		i--
+		buf[i] = ' '
+	}
+
+	// Left padding with zeros has already been handled like precision earlier
+	// or the f.zero flag is ignored due to an explicitly set precision.
+	oldZero := f.zero
+	f.zero = false
+	f.pad(buf[i:])
+	f.zero = oldZero
+}
+</code></pre>
+
+<h3 id="printvalue">printValue</h3>
+
+<p><code>printValue</code>和<code>printArg</code>非常相似，区别在于接收的参数类型为<code>reflect.Value</code>。<br />
+对于<code>reflect.Map</code>、<code>reflect.Struct</code>、<code>reflect.Interface</code>类型，会通过递归的方式打印。</p>
+
+<pre><code class="language-golang">// printValue is similar to printArg but starts with a reflect value, not an interface{} value.
+// It does not handle 'p' and 'T' verbs because these should have been already handled by printArg.
+func (p *pp) printValue(value reflect.Value, verb rune, depth int) {
+	// Handle values with special methods if not already handled by printArg (depth == 0).
+	if depth &gt; 0 &amp;&amp; value.IsValid() &amp;&amp; value.CanInterface() {
+		p.arg = value.Interface()
+		if p.handleMethods(verb) {
+			return
+		}
+	}
+	p.arg = nil
+	p.value = value
+
+	switch f := value; value.Kind() {
+	case reflect.Invalid:
+		if depth == 0 {
+			p.buf.WriteString(invReflectString)
+		} else {
+			switch verb {
+			case 'v':
+				p.buf.WriteString(nilAngleString)
+			default:
+				p.badVerb(verb)
+			}
+		}
+	case reflect.Bool:
+		p.fmtBool(f.Bool(), verb)
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		p.fmtInteger(uint64(f.Int()), signed, verb)
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		p.fmtInteger(f.Uint(), unsigned, verb)
+	case reflect.Float32:
+		p.fmtFloat(f.Float(), 32, verb)
+	case reflect.Float64:
+		p.fmtFloat(f.Float(), 64, verb)
+	case reflect.Complex64:
+		p.fmtComplex(f.Complex(), 64, verb)
+	case reflect.Complex128:
+		p.fmtComplex(f.Complex(), 128, verb)
+	case reflect.String:
+		p.fmtString(f.String(), verb)
+	case reflect.Map:
+		if p.fmt.sharpV {
+			p.buf.WriteString(f.Type().String())
+			if f.IsNil() {
+				p.buf.WriteString(nilParenString)
+				return
+			}
+			p.buf.WriteByte('{')
+		} else {
+			p.buf.WriteString(mapString)
+		}
+		keys := f.MapKeys()
+		for i, key := range keys {
+			if i &gt; 0 {
+				if p.fmt.sharpV {
+					p.buf.WriteString(commaSpaceString)
+				} else {
+					p.buf.WriteByte(' ')
+				}
+			}
+			p.printValue(key, verb, depth+1)
+			p.buf.WriteByte(':')
+			p.printValue(f.MapIndex(key), verb, depth+1)
+		}
+		if p.fmt.sharpV {
+			p.buf.WriteByte('}')
+		} else {
+			p.buf.WriteByte(']')
+		}
+	case reflect.Struct:
+		if p.fmt.sharpV {
+			p.buf.WriteString(f.Type().String())
+		}
+		p.buf.WriteByte('{')
+		for i := 0; i &lt; f.NumField(); i++ {
+			if i &gt; 0 {
+				if p.fmt.sharpV {
+					p.buf.WriteString(commaSpaceString)
+				} else {
+					p.buf.WriteByte(' ')
+				}
+			}
+			if p.fmt.plusV || p.fmt.sharpV {
+				if name := f.Type().Field(i).Name; name != &quot;&quot; {
+					p.buf.WriteString(name)
+					p.buf.WriteByte(':')
+				}
+			}
+			p.printValue(getField(f, i), verb, depth+1)
+		}
+		p.buf.WriteByte('}')
+	case reflect.Interface:
+		value := f.Elem()
+		if !value.IsValid() {
+			if p.fmt.sharpV {
+				p.buf.WriteString(f.Type().String())
+				p.buf.WriteString(nilParenString)
+			} else {
+				p.buf.WriteString(nilAngleString)
+			}
+		} else {
+			p.printValue(value, verb, depth+1)
+		}
+	case reflect.Array, reflect.Slice:
+		switch verb {
+		case 's', 'q', 'x', 'X':
+			// Handle byte and uint8 slices and arrays special for the above verbs.
+			t := f.Type()
+			if t.Elem().Kind() == reflect.Uint8 {
+				var bytes []byte
+				if f.Kind() == reflect.Slice {
+					bytes = f.Bytes()
+				} else if f.CanAddr() {
+					bytes = f.Slice(0, f.Len()).Bytes()
+				} else {
+					// We have an array, but we cannot Slice() a non-addressable array,
+					// so we build a slice by hand. This is a rare case but it would be nice
+					// if reflection could help a little more.
+					bytes = make([]byte, f.Len())
+					for i := range bytes {
+						bytes[i] = byte(f.Index(i).Uint())
+					}
+				}
+				p.fmtBytes(bytes, verb, t.String())
+				return
+			}
+		}
+		if p.fmt.sharpV {
+			p.buf.WriteString(f.Type().String())
+			if f.Kind() == reflect.Slice &amp;&amp; f.IsNil() {
+				p.buf.WriteString(nilParenString)
+				return
+			}
+			p.buf.WriteByte('{')
+			for i := 0; i &lt; f.Len(); i++ {
+				if i &gt; 0 {
+					p.buf.WriteString(commaSpaceString)
+				}
+				p.printValue(f.Index(i), verb, depth+1)
+			}
+			p.buf.WriteByte('}')
+		} else {
+			p.buf.WriteByte('[')
+			for i := 0; i &lt; f.Len(); i++ {
+				if i &gt; 0 {
+					p.buf.WriteByte(' ')
+				}
+				p.printValue(f.Index(i), verb, depth+1)
+			}
+			p.buf.WriteByte(']')
+		}
+	case reflect.Ptr:
+		// pointer to array or slice or struct? ok at top level
+		// but not embedded (avoid loops)
+		if depth == 0 &amp;&amp; f.Pointer() != 0 {
+			switch a := f.Elem(); a.Kind() {
+			case reflect.Array, reflect.Slice, reflect.Struct, reflect.Map:
+				p.buf.WriteByte('&amp;')
+				p.printValue(a, verb, depth+1)
+				return
+			}
+		}
+		fallthrough
+	case reflect.Chan, reflect.Func, reflect.UnsafePointer:
+		p.fmtPointer(f, verb)
+	default:
+		p.unknownType(f)
+	}
+}
+</code></pre>
+
+<h3 id="总结">总结</h3>
+
+<p><code>fmt.Sprintf</code>因为反射而损失了部分性能，因此在性能关键的地方应该减少应用。<br />
+根据benchmark的结果，我认为大部分情况下，这样的性能消耗并不会产生很大的影响。可以根据实际情况进行评估。</p>
+</div>
+
+  <footer class="article-footer">
+    
+    
+    
+    <section class="bordered">
+      <header>
+        <div class="panel-title">TAGS</div>
+      </header>
+      <div>
+        <ul class="p-terms">
+          
+          <li><a href="https://dafengge0913.github.io/tags/golang/">golang</a></li>
+          
+        </ul>
+      </div>
+    </section>
+    
+    
+  </footer>
+
+</article>
+
+  </div>
+
+  <div class="col-md-4">
+    
+<aside class="l-sidebar">
+
+  
+  <section class="panel panel-default">
+    <div class="panel-heading">
+      <div class="panel-title">TAG</div>
+    </div>
+    <div class="list-group">
+      
+      <a href="https://dafengge0913.github.io/tags/java" class="list-group-item">java</a>
+      
+      <a href="https://dafengge0913.github.io/tags/golang" class="list-group-item">golang</a>
+      
+      <a href="https://dafengge0913.github.io/tags/jvm" class="list-group-item">jvm</a>
+      
+      <a href="https://dafengge0913.github.io/tags/test" class="list-group-item">test</a>
+      
+    </div>
+  </section>
+  
+
+</aside>
+
+
+  </div>
+</div>
+
+      </div>
+    </main>
+
+    <footer class="l-footer">
+      <div class="container">
+      </div>
+    </footer>
+
+    <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/go.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/gradle.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+    $(function() { $('table').addClass('table'); })
+    </script>
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?78bdf940b9a9871ec1396580cc2fca94";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>      
+  </body>
+</html>
+

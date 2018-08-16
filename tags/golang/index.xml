@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Golang on 大峰哥的博客</title>
+    <link>https://dafengge0913.github.io/tags/golang/</link>
+    <description>Recent content in Golang on 大峰哥的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh_CN</language>
+    <lastBuildDate>Thu, 16 Aug 2018 14:31:49 +0800</lastBuildDate>
+    
+	<atom:link href="https://dafengge0913.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Golang Sprintf 源码分析</title>
+      <link>https://dafengge0913.github.io/golang-sprintf/</link>
+      <pubDate>Thu, 16 Aug 2018 14:31:49 +0800</pubDate>
+      
+      <guid>https://dafengge0913.github.io/golang-sprintf/</guid>
+      <description>昨天晚上在地铁上，看了一篇公众号推送的文章—— 深度 | 从Go高性能日志库zap看如何实现高性能Go组件。
+文章里提到了日志库使用fmt.Sprintf带来的性能问题。我之前也写过一个基于fmt.Sprintf的日志小轮子，当时也没有太关注这个方法的具体实现，今天有空，就稍微深入的研究一下源码吧。
+我使用的go版本 go version go1.10.3 windows/amd64  一个简单的例子 package main import ( &amp;quot;os&amp;quot; &amp;quot;log&amp;quot; &amp;quot;runtime/pprof&amp;quot; &amp;quot;time&amp;quot; &amp;quot;fmt&amp;quot; ) type point struct { x int y int } func main() { f, err := os.Create(&amp;quot;sprintf_cpu.prof&amp;quot;) if err != nil { log.Fatal(&amp;quot;could not create CPU profile: &amp;quot;, err) } if err := pprof.StartCPUProfile(f); err != nil { log.Fatal(&amp;quot;could not start CPU profile: &amp;quot;, err) } defer pprof.StopCPUProfile() n := 10000000 startT := time.</description>
+    </item>
+    
+  </channel>
+</rss>
