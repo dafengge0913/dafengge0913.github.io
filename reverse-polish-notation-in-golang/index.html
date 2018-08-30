@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="pinterest" content="nopin">
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+<meta name="generator" content="Hugo 0.45.1" />
+
+<link rel="canonical" href="https://dafengge0913.github.io/reverse-polish-notation-in-golang/">
+
+
+    <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.12.0/styles/darcula.min.css">
+    
+    <title>逆波兰表示法的Golang实现 - 大峰哥的博客</title>
+    
+<meta name="description" content="最近在看程杰写的《大话数据结构》，之前也看过他写的《大话设计模式》，虽然书中好多段子都很“尬”，但是整体风格还是很合我的胃口的。今天看到第四章，在介绍栈的时候提到了逆波兰表示法，这个算法好像上学的时候在POJ 上面做过。算法我也好久没碰了，今天用Golang实现一下，就当练练手吧。代码很简单，我写了比较详细的注释，那就直接看代码吧：package main import ( &amp;quot;bufio&amp;quot; &amp;quot;bytes&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;os&amp;quot; &amp;quot;strconv&amp;quot; &amp;quot;strings&amp;quot; ) type node struct { value interface{} next *node } // 栈的链式结构实现 type Stack struct { top *node length int } func NewStack() *Stack { return &amp;amp;Stack{nil, 0} } func (s *Stack) Len() int { return s.length } // 获取栈顶元素 func (s *Stack) Peek() interface{} { if s.length == 0 { return nil } return s.">
+
+<meta property="og:title" content="逆波兰表示法的Golang实现 - 大峰哥的博客">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://dafengge0913.github.io/reverse-polish-notation-in-golang/">
+<meta property="og:image" content="https://dafengge0913.github.io/images/default.png">
+<meta property="og:site_name" content="大峰哥的博客">
+<meta property="og:description" content="最近在看程杰写的《大话数据结构》，之前也看过他写的《大话设计模式》，虽然书中好多段子都很“尬”，但是整体风格还是很合我的胃口的。今天看到第四章，在介绍栈的时候提到了逆波兰表示法，这个算法好像上学的时候在POJ 上面做过。算法我也好久没碰了，今天用Golang实现一下，就当练练手吧。代码很简单，我写了比较详细的注释，那就直接看代码吧：package main import ( &amp;quot;bufio&amp;quot; &amp;quot;bytes&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;os&amp;quot; &amp;quot;strconv&amp;quot; &amp;quot;strings&amp;quot; ) type node struct { value interface{} next *node } // 栈的链式结构实现 type Stack struct { top *node length int } func NewStack() *Stack { return &amp;amp;Stack{nil, 0} } func (s *Stack) Len() int { return s.length } // 获取栈顶元素 func (s *Stack) Peek() interface{} { if s.length == 0 { return nil } return s.">
+<meta property="og:locale" content="zh_CN">
+
+
+<script type="application/ld+json">
+</script>
+
+
+    <link href="https://dafengge0913.github.io/css/styles.css" rel="stylesheet">
+    
+
+  </head>
+
+  <body>
+    <header class="l-header">
+      <nav class="navbar navbar-inverse">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://dafengge0913.github.io/">大峰哥的博客</a>
+          </div>
+
+          
+          <div id="navbar" class="collapse navbar-collapse">
+            
+            <ul class="nav navbar-nav navbar-right">
+              
+              
+              <li><a href="/about">关于我</a></li>
+              
+              
+            </ul>
+            
+          </div>
+          
+
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div class="container">
+        
+<div class="row">
+  <div class="col-md-8">
+
+    <nav class="p-crumb">
+      <ol class="breadcrumb">
+        <li><a href="https://dafengge0913.github.io/"><i class="fa fa-home" aria-hidden="true"></i></a></li>
+        
+        <li class="active">逆波兰表示法的Golang实现</li>
+      </ol>
+    </nav>
+    <article class="single">
+  <header>
+    <ul class="p-facts">
+      
+      
+      
+    </ul>
+
+    <h1 class="title">逆波兰表示法的Golang实现</h1>
+  </header>
+
+  
+
+  <div class="article-body">
+
+<p>最近在看程杰写的<a href="https://book.douban.com/subject/6424904/">《大话数据结构》</a>，之前也看过他写的<a href="https://book.douban.com/subject/2334288/">《大话设计模式》</a>，虽然书中好多段子都很“尬”，但是整体风格还是很合我的胃口的。</p>
+
+<p>今天看到第四章，在介绍栈的时候提到了逆波兰表示法，这个算法好像上学的时候在<a href="http://poj.org/"> POJ </a>上面做过。算法我也好久没碰了，今天用Golang实现一下，就当练练手吧。</p>
+
+<p>代码很简单，我写了比较详细的注释，那就直接看代码吧：</p>
+
+<pre><code class="language-golang">package main
+
+import (
+	&quot;bufio&quot;
+	&quot;bytes&quot;
+	&quot;fmt&quot;
+	&quot;os&quot;
+	&quot;strconv&quot;
+	&quot;strings&quot;
+)
+
+type node struct {
+	value interface{}
+	next  *node
+}
+
+// 栈的链式结构实现
+type Stack struct {
+	top    *node
+	length int
+}
+
+func NewStack() *Stack {
+	return &amp;Stack{nil, 0}
+}
+
+func (s *Stack) Len() int {
+	return s.length
+}
+
+// 获取栈顶元素
+func (s *Stack) Peek() interface{} {
+	if s.length == 0 {
+		return nil
+	}
+	return s.top.value
+}
+
+// 弹出栈顶
+func (s *Stack) Pop() interface{} {
+	if s.length == 0 {
+		return nil
+	}
+	n := s.top
+	s.top = n.next
+	s.length--
+	return n.value
+}
+
+// 压栈
+func (s *Stack) Push(value interface{}) {
+	n := &amp;node{value, s.top}
+	// 从头部插入
+	s.top = n
+	s.length++
+}
+
+func main() {
+	var str string
+	fmt.Printf(&quot;Please enter expression: &quot;)
+	scanner := bufio.NewScanner(os.Stdin)
+	if scanner.Scan() {
+		// 读取表达式
+		str = scanner.Text()
+	}
+	if err := scanner.Err(); err != nil {
+		fmt.Println(&quot;Error encountered:&quot;, err)
+		return
+	}
+	// 去掉空格
+	str = strings.Replace(str, &quot; &quot;, &quot;&quot;, -1)
+	fmt.Println(&quot;Trimmed string:&quot; + str)
+	// 转为字符串数组
+	exp := toExp(str)
+	fmt.Print(&quot;Infix expression: &quot;)
+	printExp(exp)
+	// 转为后缀表达式
+	postfixExp := toPostfix(exp)
+	fmt.Print(&quot;Postfix expression: &quot;)
+	printExp(postfixExp)
+	// 计算结果
+	value := calValue(postfixExp)
+	fmt.Println(fmt.Sprintf(&quot;Result: %d&quot;, value))
+}
+
+// 将数字和操作符转为字符串数组
+func toExp(str string) []string {
+	s := make([]string, 0)
+	var t bytes.Buffer
+	n := 0 // 用于判断括号是否成对
+	for _, r := range str {
+		if isDigit(r) {
+			// 是数字 就写到缓存中
+			t.WriteRune(r)
+		} else {
+			rs := string(r)
+			if !isSign(rs) {
+				panic(&quot;unknown sign: &quot; + rs)
+			}
+			if t.Len() &gt; 0 {
+				// 遇到符号 把缓存中的数字 输出为数
+				s = append(s, t.String())
+				t.Reset()
+			}
+			s = append(s, rs)
+			if r == '(' {
+				n++
+			} else if r == ')' {
+				n--
+			}
+		}
+	}
+	if t.Len() &gt; 0 {
+		// 最后一个操作符后面的数字 如果最后一个操作符是 &quot;)&quot; 那么 t.Len() 为0
+		s = append(s, t.String())
+	}
+	if n != 0 {
+		panic(&quot;the number of '(' is not equal to the number of ')' &quot;)
+	}
+	return s
+}
+
+func printExp(exp []string) {
+	for _, s := range exp {
+		fmt.Print(s, &quot; &quot;)
+	}
+	fmt.Println()
+}
+
+// 是否数字
+func isDigit(r rune) bool {
+	if r &gt;= '0' &amp;&amp; r &lt;= '9' {
+		return true
+	}
+	return false
+}
+
+// 是否符号
+func isSign(s string) bool {
+	switch s {
+	case &quot;+&quot;, &quot;-&quot;, &quot;*&quot;, &quot;/&quot;, &quot;(&quot;, &quot;)&quot;:
+		return true
+	default:
+		return false
+	}
+}
+
+// 中缀表达式转后缀表达式
+func toPostfix(exp []string) []string {
+	result := make([]string, 0)
+	s := NewStack()
+	for _, str := range exp {
+		if isSign(str) {
+			// 若是符号
+			if str == &quot;(&quot; || s.Len() == 0 {
+				// &quot;(&quot; 或者 栈为空 直接进栈
+				// 括号中的计算 需要单独处理 相当于一个新的上下文
+				// 如果栈为空 需要先进栈 和后续操作符比较优先级之后 才能决定计算顺序
+				s.Push(str)
+			} else {
+				if str == &quot;)&quot; {
+					// 若为 &quot;)&quot; 依次弹出栈顶元素并输出 直到遇到 &quot;(&quot;
+					for s.Len() &gt; 0 {
+						if s.Peek().(string) == &quot;(&quot; {
+							s.Pop()
+							break
+						}
+						result = appendStr(result, s.Pop().(string))
+					}
+				} else {
+					// 判断其与栈顶符号的优先级
+					// 如果栈顶是 &quot;(&quot; 说明是新的上下文 不能相互比较优先级
+					for s.Len() &gt; 0 &amp;&amp; s.Peek().(string) != &quot;(&quot; &amp;&amp; signCompare(str, s.Peek().(string)) &lt;= 0 {
+						// 当前符号的优先级 不大于栈顶元素 弹出栈顶元素并输出
+						// 优先级高的操作 需要先计算
+						// 优先级相同 因为栈中的操作是先放进去的 也需要先计算
+						result = appendStr(result, s.Pop().(string))
+					}
+					// 当前符号入栈
+					s.Push(str)
+				}
+			}
+		} else {
+			// 若是数字就输出
+			result = appendStr(result, str)
+		}
+	}
+	for s.Len() &gt; 0 {
+		result = appendStr(result, s.Pop().(string))
+	}
+	return result
+}
+
+func appendStr(slice []string, str string) []string {
+	if str == &quot;(&quot; || str == &quot;)&quot; {
+		// 后缀表达式 不包含括号
+		return slice
+	}
+	return append(slice, str)
+}
+
+// 比较符号优先级
+func signCompare(a, b string) int {
+	return getSignValue(a) - getSignValue(b)
+}
+
+// 优先级越高 值越大
+func getSignValue(a string) int {
+	switch a {
+	case &quot;(&quot;, &quot;)&quot;:
+		return 2
+	case &quot;*&quot;, &quot;/&quot;:
+		return 1
+	default:
+		return 0
+	}
+}
+
+// 通过后缀表达式 计算值
+func calValue(exp []string) int {
+	s := NewStack()
+	for _, str := range exp {
+		if isSign(str) {
+			// 如果是符号 弹出栈顶的两个元素 进行计算
+			// 因为栈结构先进后出 所以先弹出b
+			b := getInt(s)
+			a := getInt(s)
+			var n int
+			switch str {
+			case &quot;+&quot;:
+				n = a + b
+			case &quot;-&quot;:
+				n = a - b
+			case &quot;*&quot;:
+				n = a * b
+			case &quot;/&quot;:
+				n = a / b
+			}
+			// 计算结果压栈
+			s.Push(n)
+		} else {
+			// 数字直接压栈 也可以在这里做类型转换 使栈中的值均为int
+			s.Push(str)
+		}
+	}
+	// 栈顶元素 为最终结果
+	return getInt(s)
+}
+
+// 弹出栈顶元素 并转为int
+func getInt(s *Stack) int {
+	v := s.Pop()
+	switch v.(type) {
+	case int: // push进去的计算结果为int
+		return v.(int)
+	case string: // exp中的数据为string
+		if i, err := strconv.Atoi(v.(string)); err != nil {
+			panic(err)
+		} else {
+			return i
+		}
+	}
+	panic(fmt.Sprintf(&quot;unknown value type: %T&quot;, v))
+}
+
+</code></pre>
+
+<h3 id="运行结果">运行结果：</h3>
+
+<pre><code class="language-no-highlight">
+Trimmed string:9+(3-1)*3+10/2
+Infix expression: 9 + ( 3 - 1 ) * 3 + 10 / 2 
+Postfix expression: 9 3 1 - 3 * + 10 2 / + 
+Result: 20
+</code></pre>
+
+<h3 id="总结">总结</h3>
+
+<p>逆波兰表示法解决了计算机不容易处理中缀表达式的问题。之前策划提出过能否在技能配置表中，使用字符串来配置每个技能的伤害计算公式，以方便更好的定制技能效果。这个需求其实就可以使用逆波兰表示法解决。不过后来被我以性能较差为由给拒绝了。看一下benchmark吧，这只是一个简单的例子，如果真的应用在技能系统里，还需要动态解析玩家属性等操作，差距会更大一些。</p>
+
+<pre><code class="language-golang">package main
+
+import (
+	&quot;testing&quot;
+)
+
+var exp []string
+
+func init() {
+	str := &quot;1+(2*3+4-5*6/2+7)-2&quot;
+	exp = toExp(str)
+}
+
+func BenchmarkRPN(b *testing.B) {
+	var n int
+	for i := 0; i &lt; b.N; i++ {
+		n = calValue(toPostfix(exp))
+	}
+	b.Log(n)
+}
+
+func BenchmarkDirect(b *testing.B) {
+	var n int
+	for i := 0; i &lt; b.N; i++ {
+		n = 1 + (2*3 + 4 - 5*6/2 + 7) - 2
+	}
+	b.Log(n)
+}
+
+
+</code></pre>
+
+<h3 id="运行结果-1">运行结果：</h3>
+
+<pre><code class="language-no-highlight">500000	      2787 ns/op
+--- BENCH: BenchmarkRPN-8
+	main_test.go:19: 1
+	main_test.go:19: 1
+	main_test.go:19: 1
+	main_test.go:19: 1
+2000000000	         0.29 ns/op
+--- BENCH: BenchmarkDirect-8
+	main_test.go:27: 1
+	main_test.go:27: 1
+	main_test.go:27: 1
+	main_test.go:27: 1
+	main_test.go:27: 1
+	main_test.go:27: 1
+</code></pre>
+</div>
+
+  <footer class="article-footer">
+    
+    
+    
+    <section class="bordered">
+      <header>
+        <div class="panel-title">TAGS</div>
+      </header>
+      <div>
+        <ul class="p-terms">
+          
+          <li><a href="https://dafengge0913.github.io/tags/algorithm/">algorithm</a></li>
+          
+          <li><a href="https://dafengge0913.github.io/tags/golang/">golang</a></li>
+          
+        </ul>
+      </div>
+    </section>
+    
+    
+  </footer>
+
+</article>
+
+  </div>
+
+  <div class="col-md-4">
+    
+<aside class="l-sidebar">
+
+  
+  <section class="panel panel-default">
+    <div class="panel-heading">
+      <div class="panel-title">TAG</div>
+    </div>
+    <div class="list-group">
+      
+      <a href="https://dafengge0913.github.io/tags/golang" class="list-group-item">golang</a>
+      
+      <a href="https://dafengge0913.github.io/tags/java" class="list-group-item">java</a>
+      
+      <a href="https://dafengge0913.github.io/tags/algorithm" class="list-group-item">algorithm</a>
+      
+      <a href="https://dafengge0913.github.io/tags/jvm" class="list-group-item">jvm</a>
+      
+      <a href="https://dafengge0913.github.io/tags/test" class="list-group-item">test</a>
+      
+    </div>
+  </section>
+  
+
+</aside>
+
+
+  </div>
+</div>
+
+      </div>
+    </main>
+
+    <footer class="l-footer">
+      <div class="container">
+      </div>
+    </footer>
+
+    <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/go.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/gradle.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+    $(function() { $('table').addClass('table'); })
+    </script>
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?78bdf940b9a9871ec1396580cc2fca94";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>      
+  </body>
+</html>
+

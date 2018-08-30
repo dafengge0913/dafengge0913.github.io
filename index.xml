@@ -6,10 +6,22 @@
     <description>Recent content on 大峰哥的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh_CN</language>
-    <lastBuildDate>Thu, 16 Aug 2018 14:31:49 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 30 Aug 2018 15:30:01 +0800</lastBuildDate>
     
 	<atom:link href="https://dafengge0913.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>逆波兰表示法的Golang实现</title>
+      <link>https://dafengge0913.github.io/reverse-polish-notation-in-golang/</link>
+      <pubDate>Thu, 30 Aug 2018 15:30:01 +0800</pubDate>
+      
+      <guid>https://dafengge0913.github.io/reverse-polish-notation-in-golang/</guid>
+      <description>最近在看程杰写的《大话数据结构》，之前也看过他写的《大话设计模式》，虽然书中好多段子都很“尬”，但是整体风格还是很合我的胃口的。
+今天看到第四章，在介绍栈的时候提到了逆波兰表示法，这个算法好像上学的时候在POJ 上面做过。算法我也好久没碰了，今天用Golang实现一下，就当练练手吧。
+代码很简单，我写了比较详细的注释，那就直接看代码吧：
+package main import ( &amp;quot;bufio&amp;quot; &amp;quot;bytes&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;os&amp;quot; &amp;quot;strconv&amp;quot; &amp;quot;strings&amp;quot; ) type node struct { value interface{} next *node } // 栈的链式结构实现 type Stack struct { top *node length int } func NewStack() *Stack { return &amp;amp;Stack{nil, 0} } func (s *Stack) Len() int { return s.length } // 获取栈顶元素 func (s *Stack) Peek() interface{} { if s.length == 0 { return nil } return s.</description>
+    </item>
     
     <item>
       <title>Golang Sprintf 源码分析</title>
