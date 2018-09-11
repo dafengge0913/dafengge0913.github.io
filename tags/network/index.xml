@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Network on 大峰哥的博客</title>
+    <link>https://dafengge0913.github.io/tags/network/</link>
+    <description>Recent content in Network on 大峰哥的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh_CN</language>
+    <lastBuildDate>Tue, 11 Sep 2018 14:18:53 +0800</lastBuildDate>
+    
+	<atom:link href="https://dafengge0913.github.io/tags/network/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Wireshark在Windows系统下抓取Localhost数据包</title>
+      <link>https://dafengge0913.github.io/wireshark-capture-localhost-on-windows/</link>
+      <pubDate>Tue, 11 Sep 2018 14:18:53 +0800</pubDate>
+      
+      <guid>https://dafengge0913.github.io/wireshark-capture-localhost-on-windows/</guid>
+      <description>今天在写一个小东西的时候，发现客户端和服务器通信时，客户端收不到服务器发回的消息，于是决定用wireshark抓一下包，看看是服务器没回，还是客户端有bug。
+在wireshark下使用指定端口进行过滤，发现并没有抓取到任何数据包，然而服务器已经正常打印了客户端的请求内容，因此怀疑是wireshark的问题。
+Google了一下，在stackoverflow中找到了答案。原因是默认使用的WinPcap不能抓取loopback设备。解决的方法有很多，我选择了安装Npcap，使用wireshark时，选择使用Npcap Loopback Adapter就可以了。
+Npcap Loopback Adapter只能抓取loopback的包，如果需要同时抓取localhost和外部访问，可以同时选择Npcap Loopback Adapter和以太网。
+通过上面的操作，wireshark可以顺利抓包了，发现服务器回包正常，问题出在了客户端读取上。</description>
+    </item>
+    
+  </channel>
+</rss>
