@@ -65,6 +65,34 @@
       <li><article class="li">
   <header>
     <ul class="p-facts">
+      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2018-09-20T11:33:55JST">2018-09-20</time></li>
+      
+      
+    </ul>
+    <h2 class="title"><a href="https://dafengge0913.github.io/unsafe-ports-in-browsers/">浏览器阻止的不安全端口</a></h2>
+  </header>
+
+  
+  <div class="summary">
+    
+      今天在写一个http服务的时候，随手用了一个6666的端口，然而在Chrome中访问时却显示 无法访问此网站 。
+首先我怀疑可能是http服务没有正常启动，但是并没有发现程序报错，并且我在cmd下运行：
+netstat -ano|findstr &quot;6666&quot;  发现6666端口处于监听状态。
+那么换一个端口试试吧，我随便换了一个端口，再访问就正常了，感觉是6666这个端口有问题，什么原因呢？
+我又改回6666，改用Firefox访问: Firefox的提示比较明显，浏览器出于安全考虑而阻止了一些可能不安全的端口。我又回去看了一下Chrome，原来是我太粗心，没有仔细看报错信
+    
+  </div>
+
+  <footer>
+    <a href="https://dafengge0913.github.io/unsafe-ports-in-browsers/" title="浏览器阻止的不安全端口">阅读全文…</a>
+  </footer>
+
+</article>
+</li>
+      
+      <li><article class="li">
+  <header>
+    <ul class="p-facts">
       <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2018-09-11T14:18:53JST">2018-09-11</time></li>
       
       
@@ -170,36 +198,23 @@ package main import ( &quot;bufio&quot; &quot;bytes&quot; &quot;fmt&quot; &quot;
 </article>
 </li>
       
-      <li><article class="li">
-  <header>
-    <ul class="p-facts">
-      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2018-08-01T17:26:21JST">2018-08-01</time></li>
-      
-      
-    </ul>
-    <h2 class="title"><a href="https://dafengge0913.github.io/jmh/">Java benchmark 工具 JMH</a></h2>
-  </header>
-
-  
-  <div class="summary">
-    
-      为什么需要Benchmark工具 如果想要知道一段代码的性能如何，一种常用的做法可能是这样的：
-long start = System.currentTimeMillis(); // do something &hellip; System.out.println(System.currentTimeMillis() - start);  这样做，存在几个问题：
- 结果不够精确
-首先，System.currentTimeMillis() 的注释里明确表示了，根据操作系统的不同，会存在数十毫秒的误差。虽然这个问题比较容易解决，但是造成测试结果不精确的主要原因并不是时间函数的误差，而是JVM和JIT在运行时
-    
-  </div>
-
-  <footer>
-    <a href="https://dafengge0913.github.io/jmh/" title="Java benchmark 工具 JMH">阅读全文…</a>
-  </footer>
-
-</article>
-</li>
-      
     </ul>
 
     
+<nav>
+  <ul class="pager">
+
+    
+    <li class="disabled"><a href="#">Previous</a></li>
+    
+
+    
+    <li><a href="/page/2/">Next</a></li>
+    
+
+  </ul>
+</nav>
+
 
 
   </div>
@@ -218,11 +233,11 @@ long start = System.currentTimeMillis(); // do something &hellip; System.out.pri
       
       <a href="https://dafengge0913.github.io/tags/java" class="list-group-item">java</a>
       
+      <a href="https://dafengge0913.github.io/tags/network" class="list-group-item">network</a>
+      
       <a href="https://dafengge0913.github.io/tags/algorithm" class="list-group-item">algorithm</a>
       
       <a href="https://dafengge0913.github.io/tags/jvm" class="list-group-item">jvm</a>
-      
-      <a href="https://dafengge0913.github.io/tags/network" class="list-group-item">network</a>
       
       <a href="https://dafengge0913.github.io/tags/test" class="list-group-item">test</a>
       
@@ -249,6 +264,7 @@ long start = System.currentTimeMillis(); // do something &hellip; System.out.pri
     <script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
     <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/go.min.js"></script>
     <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/gradle.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/kotlin.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
     <script>
     $(function() { $('table').addClass('table'); })

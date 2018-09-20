@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="pinterest" content="nopin">
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+<meta name="generator" content="Hugo 0.45.1" />
+
+<link rel="canonical" href="https://dafengge0913.github.io/unsafe-ports-in-browsers/">
+
+
+    <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.12.0/styles/darcula.min.css">
+    
+    <title>浏览器阻止的不安全端口 - 大峰哥的博客</title>
+    
+<meta name="description" content="今天在写一个http服务的时候，随手用了一个6666的端口，然而在Chrome中访问时却显示 无法访问此网站 。首先我怀疑可能是http服务没有正常启动，但是并没有发现程序报错，并且我在cmd下运行：netstat -ano|findstr &amp;quot;6666&amp;quot;  发现6666端口处于监听状态。那么换一个端口试试吧，我随便换了一个端口，再访问就正常了，感觉是6666这个端口有问题，什么原因呢？我又改回6666，改用Firefox访问: Firefox的提示比较明显，浏览器出于安全考虑而阻止了一些可能不安全的端口。我又回去看了一下Chrome，原来是我太粗心，没有仔细看报错信息： 在superuser上找到了Chrome的不安全端口列表，然后Firefox的在这里。这个限制并不是强制的，可以通过修改浏览器的设置来取消对这些端口的阻止，但是对外提供的服务，不可能让用户去修改他们浏览器中的这些设置，因此应该避免在程序中使用这些端口。为了通用性，避免使用的端口集合应该是上面两份（或者更多）列表的并集，我用kotlin写了一段代码，进行了合并操作，虽然写代码可能比手工合并用的时间还长，但是这么做更像一个程序员，哈哈。代码如下：val chromeBlock = &amp;quot;&amp;quot;&amp;quot; 1, // tcpmux 7, // echo 9, // discard 11, // systat 13, // daytime 15, // netstat 17, // qotd 19, // chargen 20, // ftp data 21, // ftp access 22, // ssh 23, // telnet 25, // smtp 37, // time 42, // name 43, // nicname 53, // domain 77, // priv-rjs 79, // finger 87, // ttylink 95, // supdup 101, // hostriame 102, // iso-tsap 103, // gppitnp 104, // acr-nema 109, // pop2 110, // pop3 111, // sunrpc 113, // auth 115, // sftp 117, // uucp-path 119, // nntp 123, // NTP 135, // loc-srv /epmap 139, // netbios 143, // imap2 179, // BGP 389, // ldap 465, // smtp&#43;ssl 512, // print / exec 513, // login 514, // shell 515, // printer 526, // tempo 530, // courier 531, // chat 532, // netnews 540, // uucp 556, // remotefs 563, // nntp&#43;ssl 587, // stmp?">
+
+<meta property="og:title" content="浏览器阻止的不安全端口 - 大峰哥的博客">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://dafengge0913.github.io/unsafe-ports-in-browsers/">
+<meta property="og:image" content="https://dafengge0913.github.io/images/default.png">
+<meta property="og:site_name" content="大峰哥的博客">
+<meta property="og:description" content="今天在写一个http服务的时候，随手用了一个6666的端口，然而在Chrome中访问时却显示 无法访问此网站 。首先我怀疑可能是http服务没有正常启动，但是并没有发现程序报错，并且我在cmd下运行：netstat -ano|findstr &amp;quot;6666&amp;quot;  发现6666端口处于监听状态。那么换一个端口试试吧，我随便换了一个端口，再访问就正常了，感觉是6666这个端口有问题，什么原因呢？我又改回6666，改用Firefox访问: Firefox的提示比较明显，浏览器出于安全考虑而阻止了一些可能不安全的端口。我又回去看了一下Chrome，原来是我太粗心，没有仔细看报错信息： 在superuser上找到了Chrome的不安全端口列表，然后Firefox的在这里。这个限制并不是强制的，可以通过修改浏览器的设置来取消对这些端口的阻止，但是对外提供的服务，不可能让用户去修改他们浏览器中的这些设置，因此应该避免在程序中使用这些端口。为了通用性，避免使用的端口集合应该是上面两份（或者更多）列表的并集，我用kotlin写了一段代码，进行了合并操作，虽然写代码可能比手工合并用的时间还长，但是这么做更像一个程序员，哈哈。代码如下：val chromeBlock = &amp;quot;&amp;quot;&amp;quot; 1, // tcpmux 7, // echo 9, // discard 11, // systat 13, // daytime 15, // netstat 17, // qotd 19, // chargen 20, // ftp data 21, // ftp access 22, // ssh 23, // telnet 25, // smtp 37, // time 42, // name 43, // nicname 53, // domain 77, // priv-rjs 79, // finger 87, // ttylink 95, // supdup 101, // hostriame 102, // iso-tsap 103, // gppitnp 104, // acr-nema 109, // pop2 110, // pop3 111, // sunrpc 113, // auth 115, // sftp 117, // uucp-path 119, // nntp 123, // NTP 135, // loc-srv /epmap 139, // netbios 143, // imap2 179, // BGP 389, // ldap 465, // smtp&#43;ssl 512, // print / exec 513, // login 514, // shell 515, // printer 526, // tempo 530, // courier 531, // chat 532, // netnews 540, // uucp 556, // remotefs 563, // nntp&#43;ssl 587, // stmp?">
+<meta property="og:locale" content="zh_CN">
+
+
+<script type="application/ld+json">
+</script>
+
+
+    <link href="https://dafengge0913.github.io/css/styles.css" rel="stylesheet">
+    
+
+  </head>
+
+  <body>
+    <header class="l-header">
+      <nav class="navbar navbar-inverse">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://dafengge0913.github.io/">大峰哥的博客</a>
+          </div>
+
+          
+          <div id="navbar" class="collapse navbar-collapse">
+            
+            <ul class="nav navbar-nav navbar-right">
+              
+              
+              <li><a href="/about">关于我</a></li>
+              
+              
+            </ul>
+            
+          </div>
+          
+
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div class="container">
+        
+<div class="row">
+  <div class="col-md-8">
+
+    <nav class="p-crumb">
+      <ol class="breadcrumb">
+        <li><a href="https://dafengge0913.github.io/"><i class="fa fa-home" aria-hidden="true"></i></a></li>
+        
+        <li class="active">浏览器阻止的不安全端口</li>
+      </ol>
+    </nav>
+    <article class="single">
+  <header>
+    <ul class="p-facts">
+      
+      
+      
+    </ul>
+
+    <h1 class="title">浏览器阻止的不安全端口</h1>
+  </header>
+
+  
+
+  <div class="article-body"><p>今天在写一个http服务的时候，随手用了一个6666的端口，然而在Chrome中访问时却显示 <strong>无法访问此网站</strong> 。<br />
+首先我怀疑可能是http服务没有正常启动，但是并没有发现程序报错，并且我在cmd下运行：</p>
+
+<pre><code>netstat -ano|findstr &quot;6666&quot;
+</code></pre>
+
+<p>发现6666端口处于监听状态。<br />
+那么换一个端口试试吧，我随便换了一个端口，再访问就正常了，感觉是6666这个端口有问题，什么原因呢？<br />
+我又改回6666，改用Firefox访问:
+<img src="/image/unsafe-ports-blocked-by-browser/firefox.png" alt="firefox" /></p>
+
+<p>Firefox的提示比较明显，浏览器出于安全考虑而阻止了一些可能不安全的端口。我又回去看了一下Chrome，原来是我太粗心，没有仔细看报错信息：
+<img src="/image/unsafe-ports-blocked-by-browser/chrome.png" alt="chrome" /></p>
+
+<p>在<a href="https://superuser.com/questions/188058/which-ports-are-considered-unsafe-on-chrome">superuser</a>上找到了Chrome的不安全端口列表，然后Firefox的在<a href="https://developer.mozilla.org/en-US/docs/Mozilla/Mozilla_Port_Blocking">这里</a>。</p>
+
+<p>这个限制并不是强制的，可以通过修改浏览器的设置来取消对这些端口的阻止，但是对外提供的服务，不可能让用户去修改他们浏览器中的这些设置，因此应该避免在程序中使用这些端口。<br />
+为了通用性，避免使用的端口集合应该是上面两份（或者更多）列表的并集，我用<code>kotlin</code>写了一段代码，进行了合并操作，虽然写代码可能比手工合并用的时间还长，但是这么做更像一个程序员，哈哈。</p>
+
+<p>代码如下：</p>
+
+<pre><code class="language-kotlin">val chromeBlock = &quot;&quot;&quot;
+  1,    // tcpmux
+  7,    // echo
+  9,    // discard
+  11,   // systat
+  13,   // daytime
+  15,   // netstat
+  17,   // qotd
+  19,   // chargen
+  20,   // ftp data
+  21,   // ftp access
+  22,   // ssh
+  23,   // telnet
+  25,   // smtp
+  37,   // time
+  42,   // name
+  43,   // nicname
+  53,   // domain
+  77,   // priv-rjs
+  79,   // finger
+  87,   // ttylink
+  95,   // supdup
+  101,  // hostriame
+  102,  // iso-tsap
+  103,  // gppitnp
+  104,  // acr-nema
+  109,  // pop2
+  110,  // pop3
+  111,  // sunrpc
+  113,  // auth
+  115,  // sftp
+  117,  // uucp-path
+  119,  // nntp
+  123,  // NTP
+  135,  // loc-srv /epmap
+  139,  // netbios
+  143,  // imap2
+  179,  // BGP
+  389,  // ldap
+  465,  // smtp+ssl
+  512,  // print / exec
+  513,  // login
+  514,  // shell
+  515,  // printer
+  526,  // tempo
+  530,  // courier
+  531,  // chat
+  532,  // netnews
+  540,  // uucp
+  556,  // remotefs
+  563,  // nntp+ssl
+  587,  // stmp?
+  601,  // ??
+  636,  // ldap+ssl
+  993,  // ldap+ssl
+  995,  // pop3+ssl
+  2049, // nfs
+  3659, // apple-sasl / PasswordServer
+  4045, // lockd
+  6000, // X11
+  6665, // Alternate IRC [Apple addition]
+  6666, // Alternate IRC [Apple addition]
+  6667, // Standard IRC [Apple addition]
+  6668, // Alternate IRC [Apple addition]
+  6669, // Alternate IRC [Apple addition]
+&quot;&quot;&quot;.trimIndent()
+
+val firefoxList = &quot;&quot;&quot;
+  1	tcpmux
+  7	echo
+  9	discard
+  11	systat
+  13	daytime
+  15	netstat
+  17	qotd
+  19	chargen
+  20	ftp data
+  21	ftp control
+  22	ssh
+  23	telnet
+  25	smtp
+  37	time
+  42	name
+  43	nicname
+  53	domain
+  77	priv-rjs
+  79	finger
+  87	ttylink
+  95	supdup
+  101	hostriame
+  102	iso-tsap
+  103	gppitnp
+  104	acr-nema
+  109	POP2
+  110	POP3
+  111	sunrpc
+  113	auth
+  115	sftp
+  117	uucp-path
+  119	NNTP
+  123	NTP
+  135	loc-srv / epmap
+  139	netbios
+  143	IMAP2
+  179	BGP
+  389	LDAP
+  465	SMTP+SSL
+  512	print / exec
+  513	login
+  514	shell
+  515	printer
+  526	tempo
+  530	courier
+  531	chat
+  532	netnews
+  540	uucp
+  556	remotefs
+  563	NNTP+SSL
+  587	submission
+  601	syslog
+  636	LDAP+SSL
+  993	IMAP+SSL
+  995	POP3+SSL
+  2049	nfs
+  4045	lockd
+  6000	X11
+&quot;&quot;&quot;.trimIndent()
+
+data class Block(val id: String, var name: String)
+
+fun addBlock(map: HashMap&lt;String, Block&gt;, block: Block) {
+  map[block.id]?.let {
+    if (it.name.compareTo(block.name, true) != 0) {
+      it.name += &quot; / &quot; + block.name
+    }
+  } ?: {
+    map[block.id] = block
+  }()
+}
+
+fun main(args: Array&lt;String&gt;) {
+
+  val map: HashMap&lt;String, Block&gt; = hashMapOf()
+  chromeBlock.split(&quot;\n&quot;).forEach {
+    val str = it.replace(&quot;,&quot;, &quot;&quot;).replace(&quot;//&quot;, &quot;&quot;)
+    val arr = str.split(&quot;\\s+&quot;.toRegex(), 2)
+    if (arr.size != 2) {
+      println(&quot;chromeBlock split error, need size 2, get size：${arr.size}&quot;)
+      return
+    }
+    addBlock(map, Block(arr[0], arr[1]))
+  }
+  firefoxList.split(&quot;\n&quot;).forEach {
+    val arr = it.split(&quot;\\s+&quot;.toRegex(), 2)
+    if (arr.size != 2) {
+      println(&quot;firefoxList split error, need size 2, get size：${arr.size}&quot;)
+      return
+    }
+    addBlock(map, Block(arr[0], arr[1]))
+  }
+  map.entries.sortedBy { it.key.toInt() }.forEach {
+    println(&quot;${it.key} ${it.value.name}&quot;)
+  }
+}
+</code></pre>
+
+<p>最终得到的列表如下：</p>
+
+<pre><code>1 tcpmux
+7 echo
+9 discard
+11 systat
+13 daytime
+15 netstat
+17 qotd
+19 chargen
+20 ftp data
+21 ftp access / ftp control
+22 ssh
+23 telnet
+25 smtp
+37 time
+42 name
+43 nicname
+53 domain
+77 priv-rjs
+79 finger
+87 ttylink
+95 supdup
+101 hostriame
+102 iso-tsap
+103 gppitnp
+104 acr-nema
+109 pop2
+110 pop3
+111 sunrpc
+113 auth
+115 sftp
+117 uucp-path
+119 nntp
+123 NTP
+135 loc-srv /epmap / loc-srv / epmap
+139 netbios
+143 imap2
+179 BGP
+389 ldap
+465 smtp+ssl
+512 print / exec
+513 login
+514 shell
+515 printer
+526 tempo
+530 courier
+531 chat
+532 netnews
+540 uucp
+556 remotefs
+563 nntp+ssl
+587 stmp? / submission
+601 ?? / syslog
+636 ldap+ssl
+993 ldap+ssl / IMAP+SSL
+995 pop3+ssl
+2049 nfs
+3659 apple-sasl / PasswordServer
+4045 lockd
+6000 X11
+6665 Alternate IRC [Apple addition]
+6666 Alternate IRC [Apple addition]
+6667 Standard IRC [Apple addition]
+6668 Alternate IRC [Apple addition]
+6669 Alternate IRC [Apple addition]
+</code></pre>
+
+<p>最后，我用Microsoft Edge又试了一次，上面列表中的大部分端口都可以访问，这算优点还是缺点呢？</p>
+</div>
+
+  <footer class="article-footer">
+    
+    
+    
+    <section class="bordered">
+      <header>
+        <div class="panel-title">TAGS</div>
+      </header>
+      <div>
+        <ul class="p-terms">
+          
+          <li><a href="https://dafengge0913.github.io/tags/network/">network</a></li>
+          
+        </ul>
+      </div>
+    </section>
+    
+    
+  </footer>
+
+</article>
+
+  </div>
+
+  <div class="col-md-4">
+    
+<aside class="l-sidebar">
+
+  
+  <section class="panel panel-default">
+    <div class="panel-heading">
+      <div class="panel-title">TAG</div>
+    </div>
+    <div class="list-group">
+      
+      <a href="https://dafengge0913.github.io/tags/golang" class="list-group-item">golang</a>
+      
+      <a href="https://dafengge0913.github.io/tags/java" class="list-group-item">java</a>
+      
+      <a href="https://dafengge0913.github.io/tags/network" class="list-group-item">network</a>
+      
+      <a href="https://dafengge0913.github.io/tags/algorithm" class="list-group-item">algorithm</a>
+      
+      <a href="https://dafengge0913.github.io/tags/jvm" class="list-group-item">jvm</a>
+      
+      <a href="https://dafengge0913.github.io/tags/test" class="list-group-item">test</a>
+      
+    </div>
+  </section>
+  
+
+</aside>
+
+
+  </div>
+</div>
+
+      </div>
+    </main>
+
+    <footer class="l-footer">
+      <div class="container">
+      </div>
+    </footer>
+
+    <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/go.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/gradle.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/kotlin.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+    $(function() { $('table').addClass('table'); })
+    </script>
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?78bdf940b9a9871ec1396580cc2fca94";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>      
+  </body>
+</html>
+

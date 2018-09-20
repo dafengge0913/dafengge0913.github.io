@@ -6,10 +6,27 @@
     <description>Recent content in Network on 大峰哥的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh_CN</language>
-    <lastBuildDate>Tue, 11 Sep 2018 14:18:53 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 20 Sep 2018 11:33:55 +0800</lastBuildDate>
     
 	<atom:link href="https://dafengge0913.github.io/tags/network/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>浏览器阻止的不安全端口</title>
+      <link>https://dafengge0913.github.io/unsafe-ports-in-browsers/</link>
+      <pubDate>Thu, 20 Sep 2018 11:33:55 +0800</pubDate>
+      
+      <guid>https://dafengge0913.github.io/unsafe-ports-in-browsers/</guid>
+      <description>今天在写一个http服务的时候，随手用了一个6666的端口，然而在Chrome中访问时却显示 无法访问此网站 。
+首先我怀疑可能是http服务没有正常启动，但是并没有发现程序报错，并且我在cmd下运行：
+netstat -ano|findstr &amp;quot;6666&amp;quot;  发现6666端口处于监听状态。
+那么换一个端口试试吧，我随便换了一个端口，再访问就正常了，感觉是6666这个端口有问题，什么原因呢？
+我又改回6666，改用Firefox访问: Firefox的提示比较明显，浏览器出于安全考虑而阻止了一些可能不安全的端口。我又回去看了一下Chrome，原来是我太粗心，没有仔细看报错信息： 在superuser上找到了Chrome的不安全端口列表，然后Firefox的在这里。
+这个限制并不是强制的，可以通过修改浏览器的设置来取消对这些端口的阻止，但是对外提供的服务，不可能让用户去修改他们浏览器中的这些设置，因此应该避免在程序中使用这些端口。
+为了通用性，避免使用的端口集合应该是上面两份（或者更多）列表的并集，我用kotlin写了一段代码，进行了合并操作，虽然写代码可能比手工合并用的时间还长，但是这么做更像一个程序员，哈哈。
+代码如下：
+val chromeBlock = &amp;quot;&amp;quot;&amp;quot; 1, // tcpmux 7, // echo 9, // discard 11, // systat 13, // daytime 15, // netstat 17, // qotd 19, // chargen 20, // ftp data 21, // ftp access 22, // ssh 23, // telnet 25, // smtp 37, // time 42, // name 43, // nicname 53, // domain 77, // priv-rjs 79, // finger 87, // ttylink 95, // supdup 101, // hostriame 102, // iso-tsap 103, // gppitnp 104, // acr-nema 109, // pop2 110, // pop3 111, // sunrpc 113, // auth 115, // sftp 117, // uucp-path 119, // nntp 123, // NTP 135, // loc-srv /epmap 139, // netbios 143, // imap2 179, // BGP 389, // ldap 465, // smtp+ssl 512, // print / exec 513, // login 514, // shell 515, // printer 526, // tempo 530, // courier 531, // chat 532, // netnews 540, // uucp 556, // remotefs 563, // nntp+ssl 587, // stmp?</description>
+    </item>
     
     <item>
       <title>Wireshark在Windows系统下抓取Localhost数据包</title>
