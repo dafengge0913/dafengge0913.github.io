@@ -4,14 +4,14 @@
     <meta charset="utf-8">
 <meta name="pinterest" content="nopin">
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-<meta name="generator" content="Hugo 0.45.1" />
+<meta name="generator" content="Hugo 0.49.2" />
 
 <link rel="canonical" href="https://dafengge0913.github.io/unsafe-ports-in-browsers/">
 
 
-    <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
-    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.12.0/styles/darcula.min.css">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/darcula.min.css">
     
     <title>浏览器阻止的不安全端口 - 大峰哥的博客</title>
     
@@ -182,64 +182,64 @@
 &quot;&quot;&quot;.trimIndent()
 
 val firefoxList = &quot;&quot;&quot;
-  1	tcpmux
-  7	echo
-  9	discard
-  11	systat
-  13	daytime
-  15	netstat
-  17	qotd
-  19	chargen
-  20	ftp data
-  21	ftp control
-  22	ssh
-  23	telnet
-  25	smtp
-  37	time
-  42	name
-  43	nicname
-  53	domain
-  77	priv-rjs
-  79	finger
-  87	ttylink
-  95	supdup
-  101	hostriame
-  102	iso-tsap
-  103	gppitnp
-  104	acr-nema
-  109	POP2
-  110	POP3
-  111	sunrpc
-  113	auth
-  115	sftp
-  117	uucp-path
-  119	NNTP
-  123	NTP
-  135	loc-srv / epmap
-  139	netbios
-  143	IMAP2
-  179	BGP
-  389	LDAP
-  465	SMTP+SSL
-  512	print / exec
-  513	login
-  514	shell
-  515	printer
-  526	tempo
-  530	courier
-  531	chat
-  532	netnews
-  540	uucp
-  556	remotefs
-  563	NNTP+SSL
-  587	submission
-  601	syslog
-  636	LDAP+SSL
-  993	IMAP+SSL
-  995	POP3+SSL
-  2049	nfs
-  4045	lockd
-  6000	X11
+  1 tcpmux
+  7 echo
+  9 discard
+  11    systat
+  13    daytime
+  15    netstat
+  17    qotd
+  19    chargen
+  20    ftp data
+  21    ftp control
+  22    ssh
+  23    telnet
+  25    smtp
+  37    time
+  42    name
+  43    nicname
+  53    domain
+  77    priv-rjs
+  79    finger
+  87    ttylink
+  95    supdup
+  101   hostriame
+  102   iso-tsap
+  103   gppitnp
+  104   acr-nema
+  109   POP2
+  110   POP3
+  111   sunrpc
+  113   auth
+  115   sftp
+  117   uucp-path
+  119   NNTP
+  123   NTP
+  135   loc-srv / epmap
+  139   netbios
+  143   IMAP2
+  179   BGP
+  389   LDAP
+  465   SMTP+SSL
+  512   print / exec
+  513   login
+  514   shell
+  515   printer
+  526   tempo
+  530   courier
+  531   chat
+  532   netnews
+  540   uucp
+  556   remotefs
+  563   NNTP+SSL
+  587   submission
+  601   syslog
+  636   LDAP+SSL
+  993   IMAP+SSL
+  995   POP3+SSL
+  2049  nfs
+  4045  lockd
+  6000  X11
 &quot;&quot;&quot;.trimIndent()
 
 data class Block(val id: String, var name: String)
@@ -416,12 +416,12 @@ fun main(args: Array&lt;String&gt;) {
       </div>
     </footer>
 
-    <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
-    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
-    <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/go.min.js"></script>
-    <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/gradle.min.js"></script>
-    <script src="//cdn.bootcss.com/highlight.js/9.12.0/languages/kotlin.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/gradle.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/kotlin.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
     <script>
     $(function() { $('table').addClass('table'); })
