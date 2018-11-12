@@ -6,10 +6,21 @@
     <description>Recent content in Golang on 大峰哥的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh_CN</language>
-    <lastBuildDate>Thu, 30 Aug 2018 15:30:01 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 12 Nov 2018 16:18:40 +0800</lastBuildDate>
     
 	<atom:link href="https://dafengge0913.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Golang JSON</title>
+      <link>https://dafengge0913.github.io/golang-json/</link>
+      <pubDate>Mon, 12 Nov 2018 16:18:40 +0800</pubDate>
+      
+      <guid>https://dafengge0913.github.io/golang-json/</guid>
+      <description>博客有段时间没更新了，最近刚刚换了工作，入坑了区块链。
+最近帮同事解决了一个修改Ethereum项目中struct结构，但是序列化结果不变的问题，其中涉及了go generate和json序列化等知识，今天决定先整理一下json序列化的部分，以后有时间再总结go generate。
+我使用的go版本 go version go1.11.1 windows/amd64  一个简单的例子 package main import ( &amp;quot;encoding/json&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;time&amp;quot; ) type Data struct { Id int `json:&amp;quot;,string&amp;quot;` Name string `json:&amp;quot;name&amp;quot;` PrivateKey string `json:&amp;quot;-&amp;quot;` Option1 string `json:&amp;quot;,omitempty&amp;quot;` Option2 string `json:&amp;quot;,omitempty&amp;quot;` Option3 string `json:&amp;quot;op3,omitempty&amp;quot;` Time time.Time } func main() { data := &amp;amp;Data{ Id: 123, Name: &amp;quot;aaa&amp;quot;, PrivateKey: &amp;quot;pk&amp;quot;, Option1: &amp;quot;op111&amp;quot;, Option3: &amp;quot;&amp;quot;, Time: time.Now(), } b, err := json.Marshal(data) if err !</description>
+    </item>
     
     <item>
       <title>逆波兰表示法的Golang实现</title>

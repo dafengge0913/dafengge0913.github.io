@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="pinterest" content="nopin">
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+<meta name="generator" content="Hugo 0.51" />
+
+<link rel="canonical" href="https://dafengge0913.github.io/golang-json/">
+
+
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/darcula.min.css">
+    
+    <title>Golang JSON - 大峰哥的博客</title>
+    
+<meta name="description" content="博客有段时间没更新了，最近刚刚换了工作，入坑了区块链。最近帮同事解决了一个修改Ethereum项目中struct结构，但是序列化结果不变的问题，其中涉及了go generate和json序列化等知识，今天决定先整理一下json序列化的部分，以后有时间再总结go generate。我使用的go版本 go version go1.11.1 windows/amd64  一个简单的例子 package main import ( &amp;quot;encoding/json&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;time&amp;quot; ) type Data struct { Id int `json:&amp;quot;,string&amp;quot;` Name string `json:&amp;quot;name&amp;quot;` PrivateKey string `json:&amp;quot;-&amp;quot;` Option1 string `json:&amp;quot;,omitempty&amp;quot;` Option2 string `json:&amp;quot;,omitempty&amp;quot;` Option3 string `json:&amp;quot;op3,omitempty&amp;quot;` Time time.Time } func main() { data := &amp;amp;Data{ Id: 123, Name: &amp;quot;aaa&amp;quot;, PrivateKey: &amp;quot;pk&amp;quot;, Option1: &amp;quot;op111&amp;quot;, Option3: &amp;quot;&amp;quot;, Time: time.Now(), } b, err := json.Marshal(data) if err !">
+
+<meta property="og:title" content="Golang JSON - 大峰哥的博客">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://dafengge0913.github.io/golang-json/">
+<meta property="og:image" content="https://dafengge0913.github.io/images/default.png">
+<meta property="og:site_name" content="大峰哥的博客">
+<meta property="og:description" content="博客有段时间没更新了，最近刚刚换了工作，入坑了区块链。最近帮同事解决了一个修改Ethereum项目中struct结构，但是序列化结果不变的问题，其中涉及了go generate和json序列化等知识，今天决定先整理一下json序列化的部分，以后有时间再总结go generate。我使用的go版本 go version go1.11.1 windows/amd64  一个简单的例子 package main import ( &amp;quot;encoding/json&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;time&amp;quot; ) type Data struct { Id int `json:&amp;quot;,string&amp;quot;` Name string `json:&amp;quot;name&amp;quot;` PrivateKey string `json:&amp;quot;-&amp;quot;` Option1 string `json:&amp;quot;,omitempty&amp;quot;` Option2 string `json:&amp;quot;,omitempty&amp;quot;` Option3 string `json:&amp;quot;op3,omitempty&amp;quot;` Time time.Time } func main() { data := &amp;amp;Data{ Id: 123, Name: &amp;quot;aaa&amp;quot;, PrivateKey: &amp;quot;pk&amp;quot;, Option1: &amp;quot;op111&amp;quot;, Option3: &amp;quot;&amp;quot;, Time: time.Now(), } b, err := json.Marshal(data) if err !">
+<meta property="og:locale" content="zh_CN">
+
+
+<script type="application/ld+json">
+</script>
+
+
+    <link href="https://dafengge0913.github.io/css/styles.css" rel="stylesheet">
+    
+
+  </head>
+
+  <body>
+    <header class="l-header">
+      <nav class="navbar navbar-inverse">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://dafengge0913.github.io/">大峰哥的博客</a>
+          </div>
+
+          
+          <div id="navbar" class="collapse navbar-collapse">
+            
+            <ul class="nav navbar-nav navbar-right">
+              
+              
+              <li><a href="/about">关于我</a></li>
+              
+              
+            </ul>
+            
+          </div>
+          
+
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div class="container">
+        
+<div class="row">
+  <div class="col-md-8">
+
+    <nav class="p-crumb">
+      <ol class="breadcrumb">
+        <li><a href="https://dafengge0913.github.io/"><i class="fa fa-home" aria-hidden="true"></i></a></li>
+        
+        <li class="active">Golang JSON</li>
+      </ol>
+    </nav>
+    <article class="single">
+  <header>
+    <ul class="p-facts">
+      
+      
+      
+    </ul>
+
+    <h1 class="title">Golang JSON</h1>
+  </header>
+
+  
+
+  <div class="article-body">
+
+<p>博客有段时间没更新了，最近刚刚换了工作，入坑了区块链。<br />
+最近帮同事解决了一个修改Ethereum项目中struct结构，但是序列化结果不变的问题，其中涉及了go generate和json序列化等知识，今天决定先整理一下json序列化的部分，以后有时间再总结go generate。</p>
+
+<h2 id="我使用的go版本">我使用的go版本</h2>
+
+<pre><code class="language-no-highlight">go version go1.11.1 windows/amd64
+</code></pre>
+
+<h2 id="一个简单的例子">一个简单的例子</h2>
+
+<pre><code class="language-golang">package main
+
+import (
+	&quot;encoding/json&quot;
+	&quot;fmt&quot;
+	&quot;time&quot;
+)
+
+type Data struct {
+	Id         int    `json:&quot;,string&quot;`
+	Name       string `json:&quot;name&quot;`
+	PrivateKey string `json:&quot;-&quot;`
+	Option1    string `json:&quot;,omitempty&quot;`
+	Option2    string `json:&quot;,omitempty&quot;`
+	Option3    string `json:&quot;op3,omitempty&quot;`
+	Time       time.Time
+}
+
+func main() {
+	data := &amp;Data{
+		Id:         123,
+		Name:       &quot;aaa&quot;,
+		PrivateKey: &quot;pk&quot;,
+		Option1:    &quot;op111&quot;,
+		Option3:    &quot;&quot;,
+		Time:       time.Now(),
+	}
+	b, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(&quot;Marshal: &quot;, string(b))
+	var newData Data
+	if err := json.Unmarshal(b, &amp;newData); err != nil {
+		panic(err)
+	}
+	fmt.Printf(&quot;Unmarshal: %+v\n&quot;, newData)
+}
+
+</code></pre>
+
+<p>输出</p>
+
+<pre><code class="language-no-highlight">Marshal:  {&quot;Id&quot;:&quot;123&quot;,&quot;name&quot;:&quot;aaa&quot;,&quot;Option1&quot;:&quot;op111&quot;,&quot;Time&quot;:&quot;2018-11-12T16:42:15.0638139+08:00&quot;}
+Unmarshal: {Id:123 Name:aaa PrivateKey: Option1:op111 Option2: Option3: Time:2018-11-12 16:42:15.0638139 +0800 CST}
+</code></pre>
+
+<h2 id="公有字段">公有字段</h2>
+
+<p>go标准库的json序列化仅支持公有字段，因此字段名的开头字母需要大写。</p>
+
+<h2 id="字段命名">字段命名</h2>
+
+<p>默认json中的key与字段名一致，可以通过<code>`json:&quot;key名称&quot;`</code> 来指定。</p>
+
+<h2 id="忽略字段">忽略字段</h2>
+
+<p>使用<code>`json:&quot;-&quot;`</code>指定字段不参与序列化。</p>
+
+<h2 id="忽略字段空值">忽略字段空值</h2>
+
+<p>如果希望某个字段为空值时，不包含在json中，可以使用<code>`json:&quot;,omitempty&quot;`</code>来指定，逗号前面可以指定字段名称，例如：<code>`json:&quot;e3,omitempty&quot;`</code></p>
+
+<h2 id="将数值序列化为字符串">将数值序列化为字符串</h2>
+
+<p>通过 <code>`json:&quot;,string&quot;`</code>，可以将数值类型的字段序列化为字符串。</p>
+
+<h2 id="marshaler和unmarshaler接口">Marshaler和Unmarshaler接口</h2>
+
+<pre><code class="language-golang">type Marshaler interface {
+	MarshalJSON() ([]byte, error)
+}
+</code></pre>
+
+<p>位于：encoding/json/encode.go</p>
+
+<pre><code class="language-golang">type Unmarshaler interface {
+	UnmarshalJSON([]byte) error
+}
+</code></pre>
+
+<p>位于：encoding/json/decode.go</p>
+
+<p>通过Marshaler和Unmarshaler接口，可以自定义序列化和反序列化时需要执行的操作。<br />
+下面修改一下上面例子中的日期格式：</p>
+
+<pre><code class="language-golang">package main
+
+import (
+	&quot;encoding/json&quot;
+	&quot;fmt&quot;
+	&quot;time&quot;
+)
+
+type MyTime time.Time
+
+type Data struct {
+	Id         int    `json:&quot;,string&quot;`
+	Name       string `json:&quot;name&quot;`
+	PrivateKey string `json:&quot;-&quot;`
+	Option1    string `json:&quot;,omitempty&quot;`
+	Option2    string `json:&quot;,omitempty&quot;`
+	Option3    string `json:&quot;op3,omitempty&quot;`
+	Time       MyTime
+}
+
+var dateFormat = `&quot;` + &quot;2006年01月02日 15:04:05&quot; + `&quot;`
+
+func (t MyTime) MarshalJSON() ([]byte, error) {
+	return []byte(time.Time(t).Format(dateFormat)), nil
+}
+
+func (t *MyTime) UnmarshalJSON(b []byte) error {
+	temp, err := time.Parse(dateFormat, string(b))
+	if err != nil {
+		return err
+	}
+	*t = MyTime(temp)
+	return nil
+}
+
+func main() {
+	data := &amp;Data{
+		Id:         123,
+		Name:       &quot;aaa&quot;,
+		PrivateKey: &quot;pk&quot;,
+		Option1:    &quot;op111&quot;,
+		Option3:    &quot;&quot;,
+		Time:       MyTime(time.Now()),
+	}
+	b, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(&quot;Marshal: &quot;, string(b))
+	var newData Data
+	if err := json.Unmarshal(b, &amp;newData); err != nil {
+		panic(err)
+	}
+	fmt.Printf(&quot;Unmarshal: %+v\n&quot;, newData)
+}
+
+</code></pre>
+
+<p>输出：</p>
+
+<pre><code class="language-no-highlight">Marshal:  {&quot;Id&quot;:&quot;123&quot;,&quot;name&quot;:&quot;aaa&quot;,&quot;Option1&quot;:&quot;op111&quot;,&quot;Time&quot;:&quot;2018年11月12日 16:52:59&quot;}
+Unmarshal: {Id:123 Name:aaa PrivateKey: Option1:op111 Option2: Option3: Time:{wall:0 ext:63677638379 loc:&lt;nil&gt;}}
+</code></pre>
+
+<p><strong>由于处理的是json字符串，因此dateFormat前后添加了双引号。</strong><br />
+这样做，我们定义了一个新的类型MyTime，在使用Time字段时不太方便。</p>
+
+<p>另一种方法：</p>
+
+<pre><code class="language-golang">package main
+
+import (
+	&quot;encoding/json&quot;
+	&quot;fmt&quot;
+	&quot;time&quot;
+)
+
+type Data struct {
+	Id         int    `json:&quot;,string&quot;`
+	Name       string `json:&quot;name&quot;`
+	PrivateKey string `json:&quot;-&quot;`
+	Option1    string `json:&quot;,omitempty&quot;`
+	Option2    string `json:&quot;,omitempty&quot;`
+	Option3    string `json:&quot;op3,omitempty&quot;`
+	Time       time.Time
+}
+
+var dateFormat = &quot;2006年01月02日 15:04:05&quot;
+
+func (d *Data) MarshalJSON() ([]byte, error) {
+	type Alias Data
+	return json.Marshal(&amp;struct {
+		*Alias
+		Time string
+	}{
+		Alias: (*Alias)(d),
+		Time:  d.Time.Format(dateFormat),
+	})
+}
+
+func (d *Data) UnmarshalJSON(b []byte) error {
+	type Alias Data
+	temp := &amp;struct {
+		Time string
+		*Alias
+	}{
+		Alias: (*Alias)(d),
+	}
+	if err := json.Unmarshal(b, &amp;temp); err != nil {
+		return err
+	}
+	var err error
+	if d.Time, err = time.Parse(dateFormat, temp.Time); err != nil {
+		return err
+	}
+	return nil
+}
+
+func main() {
+	data := &amp;Data{
+		Id:         123,
+		Name:       &quot;aaa&quot;,
+		PrivateKey: &quot;pk&quot;,
+		Option1:    &quot;op111&quot;,
+		Option3:    &quot;&quot;,
+		Time:       time.Now(),
+	}
+	b, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(&quot;Marshal: &quot;, string(b))
+	var newData Data
+	if err := json.Unmarshal(b, &amp;newData); err != nil {
+		panic(err)
+	}
+	fmt.Printf(&quot;Unmarshal: %+v\n&quot;, newData)
+}
+
+</code></pre>
+
+<p>输出：</p>
+
+<pre><code class="language-no-highlight">Marshal:  {&quot;Id&quot;:&quot;123&quot;,&quot;name&quot;:&quot;aaa&quot;,&quot;Option1&quot;:&quot;op111&quot;,&quot;Time&quot;:&quot;2018年11月12日 17:00:31&quot;}
+Unmarshal: {Id:123 Name:aaa PrivateKey: Option1:op111 Option2: Option3: Time:2018-11-12 17:00:31 +0000 UTC}
+</code></pre>
+
+<p>定义一个匿名的struct，增加一个同名的字段，覆盖掉原来的字段。<br />
+<strong>有个需要注意的地方，对Data需要定义一个别名类型，如果在匿名struct中使用Data结构体，调用Marshal或Unmarshal方法时，会调用MarshalJSON或UnmarshalJSON，导致死递归。</strong></p>
+
+<h2 id="marshaler和unmarshaler接口是如何工作的">Marshaler和Unmarshaler接口是如何工作的</h2>
+
+<h3 id="marshaler">Marshaler</h3>
+
+<p>在调用<code>json.Marshal</code>方法时，会依次调用encoding/json/encode.go中的<code>marshal-&gt;reflectValue-&gt;valueEncoder-&gt;typeEncoder-&gt;newTypeEncoder</code></p>
+
+<pre><code class="language-golang">marshalerType = reflect.TypeOf(new(Marshaler)).Elem()
+</code></pre>
+
+<pre><code class="language-golang">if t.Implements(marshalerType) {
+	return marshalerEncoder
+}
+if t.Kind() != reflect.Ptr &amp;&amp; allowAddr {
+	if reflect.PtrTo(t).Implements(marshalerType) {
+		return newCondAddrEncoder(addrMarshalerEncoder, newTypeEncoder(t, false))
+	}
+}
+</code></pre>
+
+<p><code>newTypeEncoder</code>时判断类型，如果实现了Marshaler接口，返回marshalerEncoder。或者可寻址的非指针类型，他的指针实现了Marshaler接口，使用addrMarshalerEncoder。marshalerEncoder和addrMarshalerEncoder方法中都会调用<code>MarshalJSON</code>方法</p>
+
+<h3 id="unmarshaler">Unmarshaler</h3>
+
+<p>在调用<code>json.Unmarshal</code>方法时，会依次调用encoding/json/decode.go中的<code>unmarshal-&gt;value</code>，value方法中会根据类型调用<code>array</code>、<code>object</code>、<code>literalStore</code>方法。<br />
+三个方法中分别调用<code>indirect</code>方法获取是否实现了Unmarshaler接口，如果实现了则调用<code>UnmarshalJSON</code>。</p>
+
+<h2 id="textmarshaler和textunmarshaler接口">TextMarshaler和TextUnmarshaler接口</h2>
+
+<p>TextMarshaler与Marshaler类似，优先级比Marshaler低。返回的是文本内容，不需要自己添加双引号。<br />
+上面例子中MyTime的MarshalJSON方法可以使用MarshalText代替：</p>
+
+<pre><code>func (t MyTime) MarshalText() ([]byte, error) {
+	return []byte(time.Time(t).Format(&quot;2006年01月02日 15:04:05&quot;)), nil
+}
+</code></pre>
+</div>
+
+  <footer class="article-footer">
+    
+    
+    
+    <section class="bordered">
+      <header>
+        <div class="panel-title">TAGS</div>
+      </header>
+      <div>
+        <ul class="p-terms">
+          
+          <li><a href="https://dafengge0913.github.io/tags/golang/">golang</a></li>
+          
+        </ul>
+      </div>
+    </section>
+    
+    
+  </footer>
+
+</article>
+
+  </div>
+
+  <div class="col-md-4">
+    
+<aside class="l-sidebar">
+
+  
+  <section class="panel panel-default">
+    <div class="panel-heading">
+      <div class="panel-title">TAG</div>
+    </div>
+    <div class="list-group">
+      
+      <a href="https://dafengge0913.github.io/tags/golang" class="list-group-item">golang</a>
+      
+      <a href="https://dafengge0913.github.io/tags/java" class="list-group-item">java</a>
+      
+      <a href="https://dafengge0913.github.io/tags/network" class="list-group-item">network</a>
+      
+      <a href="https://dafengge0913.github.io/tags/algorithm" class="list-group-item">algorithm</a>
+      
+      <a href="https://dafengge0913.github.io/tags/jvm" class="list-group-item">jvm</a>
+      
+      <a href="https://dafengge0913.github.io/tags/test" class="list-group-item">test</a>
+      
+    </div>
+  </section>
+  
+
+</aside>
+
+
+  </div>
+</div>
+
+      </div>
+    </main>
+
+    <footer class="l-footer">
+      <div class="container">
+      </div>
+    </footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/gradle.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/kotlin.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+    $(function() { $('table').addClass('table'); })
+    </script>
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?78bdf940b9a9871ec1396580cc2fca94";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>      
+  </body>
+</html>
+
