@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="pinterest" content="nopin">
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+<meta name="generator" content="Hugo 0.51" />
+
+<link rel="canonical" href="https://dafengge0913.github.io/ethereum-add-flag/">
+
+
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/darcula.min.css">
+    
+    <title>以太坊 go-ethereum 新增启动参数 - 大峰哥的博客</title>
+    
+<meta name="description" content="最近在对go-ethereum项目进行二次开发时，增加几个新的启动参数，在运行时当作开关来使用，今天整理一下修改的过程。go-ethereum版本 v1.8.18-stable  修改过程 在项目入口cmd/geth/main.go的init方法中，注册了项目中使用的所有Flag：app.Flags = append(app.Flags, nodeFlags...) app.Flags = append(app.Flags, rpcFlags...) app.Flags = append(app.Flags, consoleFlags...) app.Flags = append(app.Flags, debug.Flags...) app.Flags = append(app.Flags, whisperFlags...) app.Flags = append(app.Flags, metricsFlags...)  可以根据参数的类型，定义在合适的文件里，比如我们需要一个debug的参数，那么可以定义在internal/debug/flags.go文件中。定义一个新的参数：flagTest1 = cli.StringFlag{ Name: &amp;quot;test1&amp;quot;, Usage: &amp;quot;Just for testing&amp;quot;, }  把它添加到Flags中：var Flags = []cli.Flag{ verbosityFlag, vmoduleFlag, backtraceAtFlag, debugFlag, pprofFlag, pprofAddrFlag, pprofPortFlag, memprofilerateFlag, blockprofilerateFlag, cpuprofileFlag, traceFlag, flagTest1, }  比如在Setup方法中处理参数，可以增加以下代码：if value := ctx.GlobalString(flagTest1.Name); value !">
+
+<meta property="og:title" content="以太坊 go-ethereum 新增启动参数 - 大峰哥的博客">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://dafengge0913.github.io/ethereum-add-flag/">
+<meta property="og:image" content="https://dafengge0913.github.io/images/default.png">
+<meta property="og:site_name" content="大峰哥的博客">
+<meta property="og:description" content="最近在对go-ethereum项目进行二次开发时，增加几个新的启动参数，在运行时当作开关来使用，今天整理一下修改的过程。go-ethereum版本 v1.8.18-stable  修改过程 在项目入口cmd/geth/main.go的init方法中，注册了项目中使用的所有Flag：app.Flags = append(app.Flags, nodeFlags...) app.Flags = append(app.Flags, rpcFlags...) app.Flags = append(app.Flags, consoleFlags...) app.Flags = append(app.Flags, debug.Flags...) app.Flags = append(app.Flags, whisperFlags...) app.Flags = append(app.Flags, metricsFlags...)  可以根据参数的类型，定义在合适的文件里，比如我们需要一个debug的参数，那么可以定义在internal/debug/flags.go文件中。定义一个新的参数：flagTest1 = cli.StringFlag{ Name: &amp;quot;test1&amp;quot;, Usage: &amp;quot;Just for testing&amp;quot;, }  把它添加到Flags中：var Flags = []cli.Flag{ verbosityFlag, vmoduleFlag, backtraceAtFlag, debugFlag, pprofFlag, pprofAddrFlag, pprofPortFlag, memprofilerateFlag, blockprofilerateFlag, cpuprofileFlag, traceFlag, flagTest1, }  比如在Setup方法中处理参数，可以增加以下代码：if value := ctx.GlobalString(flagTest1.Name); value !">
+<meta property="og:locale" content="zh_CN">
+
+
+<script type="application/ld+json">
+</script>
+
+
+    <link href="https://dafengge0913.github.io/css/styles.css" rel="stylesheet">
+    
+
+  </head>
+
+  <body>
+    <header class="l-header">
+      <nav class="navbar navbar-inverse">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://dafengge0913.github.io/">大峰哥的博客</a>
+          </div>
+
+          
+          <div id="navbar" class="collapse navbar-collapse">
+            
+            <ul class="nav navbar-nav navbar-right">
+              
+              
+              <li><a href="/about">关于我</a></li>
+              
+              
+            </ul>
+            
+          </div>
+          
+
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div class="container">
+        
+<div class="row">
+  <div class="col-md-8">
+
+    <nav class="p-crumb">
+      <ol class="breadcrumb">
+        <li><a href="https://dafengge0913.github.io/"><i class="fa fa-home" aria-hidden="true"></i></a></li>
+        
+        <li class="active">以太坊 go-ethereum 新增启动参数</li>
+      </ol>
+    </nav>
+    <article class="single">
+  <header>
+    <ul class="p-facts">
+      
+      
+      
+    </ul>
+
+    <h1 class="title">以太坊 go-ethereum 新增启动参数</h1>
+  </header>
+
+  
+
+  <div class="article-body">
+
+<p>最近在对<code>go-ethereum</code>项目进行二次开发时，增加几个新的启动参数，在运行时当作开关来使用，今天整理一下修改的过程。</p>
+
+<h3 id="go-ethereum版本">go-ethereum版本</h3>
+
+<pre><code class="language-no-highlight">v1.8.18-stable  
+</code></pre>
+
+<h3 id="修改过程">修改过程</h3>
+
+<p>在项目入口<code>cmd/geth/main.go</code>的<code>init</code>方法中，注册了项目中使用的所有Flag：</p>
+
+<pre><code class="language-golang">app.Flags = append(app.Flags, nodeFlags...)
+app.Flags = append(app.Flags, rpcFlags...)
+app.Flags = append(app.Flags, consoleFlags...)
+app.Flags = append(app.Flags, debug.Flags...)
+app.Flags = append(app.Flags, whisperFlags...)
+app.Flags = append(app.Flags, metricsFlags...)
+</code></pre>
+
+<p>可以根据参数的类型，定义在合适的文件里，比如我们需要一个debug的参数，那么可以定义在<code>internal/debug/flags.go</code>文件中。<br />
+定义一个新的参数：</p>
+
+<pre><code class="language-golang">flagTest1 = cli.StringFlag{
+    Name:  &quot;test1&quot;,
+    Usage: &quot;Just for testing&quot;,
+}
+</code></pre>
+
+<p>把它添加到Flags中：</p>
+
+<pre><code class="language-golang">var Flags = []cli.Flag{
+	verbosityFlag, vmoduleFlag, backtraceAtFlag, debugFlag,
+	pprofFlag, pprofAddrFlag, pprofPortFlag,
+	memprofilerateFlag, blockprofilerateFlag, cpuprofileFlag, traceFlag,
+	flagTest1,
+}
+</code></pre>
+
+<p>比如在<code>Setup</code>方法中处理参数，可以增加以下代码：</p>
+
+<pre><code class="language-golang">if value := ctx.GlobalString(flagTest1.Name); value != &quot;&quot; {
+    log.Info(&quot;flagTest1&quot;, &quot;value&quot;, value)
+}
+</code></pre>
+
+<p>使用<code>--test1 dfg</code>启动项目时可以看到以下输出：</p>
+
+<pre><code class="language-no-highlight">INFO [11-23|18:42:30.578] flagTest1                                value=dfg
+</code></pre>
+
+<p>说明新增的启动参数生效了。</p>
+</div>
+
+  <footer class="article-footer">
+    
+    
+    
+    <section class="bordered">
+      <header>
+        <div class="panel-title">TAGS</div>
+      </header>
+      <div>
+        <ul class="p-terms">
+          
+          <li><a href="https://dafengge0913.github.io/tags/blockchain/">blockchain</a></li>
+          
+        </ul>
+      </div>
+    </section>
+    
+    
+  </footer>
+
+</article>
+
+  </div>
+
+  <div class="col-md-4">
+    
+<aside class="l-sidebar">
+
+  
+  <section class="panel panel-default">
+    <div class="panel-heading">
+      <div class="panel-title">TAG</div>
+    </div>
+    <div class="list-group">
+      
+      <a href="https://dafengge0913.github.io/tags/golang" class="list-group-item">golang</a>
+      
+      <a href="https://dafengge0913.github.io/tags/java" class="list-group-item">java</a>
+      
+      <a href="https://dafengge0913.github.io/tags/network" class="list-group-item">network</a>
+      
+      <a href="https://dafengge0913.github.io/tags/algorithm" class="list-group-item">algorithm</a>
+      
+      <a href="https://dafengge0913.github.io/tags/blockchain" class="list-group-item">blockchain</a>
+      
+      <a href="https://dafengge0913.github.io/tags/jvm" class="list-group-item">jvm</a>
+      
+      <a href="https://dafengge0913.github.io/tags/test" class="list-group-item">test</a>
+      
+    </div>
+  </section>
+  
+
+</aside>
+
+
+  </div>
+</div>
+
+      </div>
+    </main>
+
+    <footer class="l-footer">
+      <div class="container">
+      </div>
+    </footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/gradle.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/kotlin.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+    $(function() { $('table').addClass('table'); })
+    </script>
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?78bdf940b9a9871ec1396580cc2fca94";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>      
+  </body>
+</html>
+

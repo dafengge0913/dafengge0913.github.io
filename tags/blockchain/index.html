@@ -6,14 +6,14 @@
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 <meta name="generator" content="Hugo 0.51" />
 
-<link rel="canonical" href="https://dafengge0913.github.io/tags/network/">
+<link rel="canonical" href="https://dafengge0913.github.io/tags/blockchain/">
 
 
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/darcula.min.css">
     
-    <title>Network - 大峰哥的博客</title>
+    <title>Blockchain - 大峰哥的博客</title>
     
     <link href="https://dafengge0913.github.io/css/styles.css" rel="stylesheet">
     
@@ -60,7 +60,7 @@
 
     
     <header class="page-header">
-      <h1>Network</h1>
+      <h1>Blockchain</h1>
     </header>
     
     <ul class="p-articles">
@@ -69,53 +69,24 @@
       <li><article class="li">
   <header>
     <ul class="p-facts">
-      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2018-09-20T11:33:55JST">2018-09-20</time></li>
+      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2018-11-23T16:23:52JST">2018-11-23</time></li>
       
       
     </ul>
-    <h2 class="title"><a href="https://dafengge0913.github.io/unsafe-ports-in-browsers/">浏览器阻止的不安全端口</a></h2>
+    <h2 class="title"><a href="https://dafengge0913.github.io/ethereum-add-flag/">以太坊 go-ethereum 新增启动参数</a></h2>
   </header>
 
   
   <div class="summary">
     
-      今天在写一个http服务的时候，随手用了一个6666的端口，然而在Chrome中访问时却显示 无法访问此网站 。
-首先我怀疑可能是http服务没有正常启动，但是并没有发现程序报错，并且我在cmd下运行：
-netstat -ano|findstr &quot;6666&quot;  发现6666端口处于监听状态。
-那么换一个端口试试吧，我随便换了一个端口，再访问就正常了，感觉是6666这个端口有问题，什么原因呢？
-我又改回6666，改用Firefox访问: Firefox的提示比较明显，浏览器出于安全考虑而阻止了一些可能不安全的端口。我又回去看了一下Chrome，原来是我太粗心，没有仔细看报错信
+      最近在对go-ethereum项目进行二次开发时，增加几个新的启动参数，在运行时当作开关来使用，今天整理一下修改的过程。
+go-ethereum版本 v1.8.18-stable  修改过程 在项目入口cmd/geth/main.go的init方法中，注册了项目中使用的所有Flag：
+app.Flags = append(app.Flags, nodeFlags&hellip;) app.Flags = append(app.Flags, rpcFlags&hellip;) app.Flags = append(app.Flags, consoleFlags&hellip;) app.Flags = append(app.
     
   </div>
 
   <footer>
-    <a href="https://dafengge0913.github.io/unsafe-ports-in-browsers/" title="浏览器阻止的不安全端口">阅读全文…</a>
-  </footer>
-
-</article>
-</li>
-      
-      <li><article class="li">
-  <header>
-    <ul class="p-facts">
-      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2018-09-11T14:18:53JST">2018-09-11</time></li>
-      
-      
-    </ul>
-    <h2 class="title"><a href="https://dafengge0913.github.io/wireshark-capture-localhost-on-windows/">Wireshark在Windows系统下抓取Localhost数据包</a></h2>
-  </header>
-
-  
-  <div class="summary">
-    
-      今天在写一个小东西的时候，发现客户端和服务器通信时，客户端收不到服务器发回的消息，于是决定用wireshark抓一下包，看看是服务器没回，还是客户端有bug。
-在wireshark下使用指定端口进行过滤，发现并没有抓取到任何数据包，然而服务器已经正常打印了客户端的请求内容，因此怀疑是wireshark的问题。
-Google了一下，在stackoverflow中找到了答案。原因是默认使用的WinPcap不能抓取loopback设备。解决的方法有很多，我选择了安装Npcap，使用wireshark时，选择使用Npcap Loopback Adapter就可以了。
-Npcap Loopback Ad
-    
-  </div>
-
-  <footer>
-    <a href="https://dafengge0913.github.io/wireshark-capture-localhost-on-windows/" title="Wireshark在Windows系统下抓取Localhost数据包">阅读全文…</a>
+    <a href="https://dafengge0913.github.io/ethereum-add-flag/" title="以太坊 go-ethereum 新增启动参数">阅读全文…</a>
   </footer>
 
 </article>

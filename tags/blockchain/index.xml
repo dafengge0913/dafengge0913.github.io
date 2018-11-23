@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blockchain on 大峰哥的博客</title>
+    <link>https://dafengge0913.github.io/tags/blockchain/</link>
+    <description>Recent content in Blockchain on 大峰哥的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh_CN</language>
+    <lastBuildDate>Fri, 23 Nov 2018 16:23:52 +0800</lastBuildDate>
+    
+	<atom:link href="https://dafengge0913.github.io/tags/blockchain/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>以太坊 go-ethereum 新增启动参数</title>
+      <link>https://dafengge0913.github.io/ethereum-add-flag/</link>
+      <pubDate>Fri, 23 Nov 2018 16:23:52 +0800</pubDate>
+      
+      <guid>https://dafengge0913.github.io/ethereum-add-flag/</guid>
+      <description>最近在对go-ethereum项目进行二次开发时，增加几个新的启动参数，在运行时当作开关来使用，今天整理一下修改的过程。
+go-ethereum版本 v1.8.18-stable  修改过程 在项目入口cmd/geth/main.go的init方法中，注册了项目中使用的所有Flag：
+app.Flags = append(app.Flags, nodeFlags...) app.Flags = append(app.Flags, rpcFlags...) app.Flags = append(app.Flags, consoleFlags...) app.Flags = append(app.Flags, debug.Flags...) app.Flags = append(app.Flags, whisperFlags...) app.Flags = append(app.Flags, metricsFlags...)  可以根据参数的类型，定义在合适的文件里，比如我们需要一个debug的参数，那么可以定义在internal/debug/flags.go文件中。
+定义一个新的参数：
+flagTest1 = cli.StringFlag{ Name: &amp;quot;test1&amp;quot;, Usage: &amp;quot;Just for testing&amp;quot;, }  把它添加到Flags中：
+var Flags = []cli.Flag{ verbosityFlag, vmoduleFlag, backtraceAtFlag, debugFlag, pprofFlag, pprofAddrFlag, pprofPortFlag, memprofilerateFlag, blockprofilerateFlag, cpuprofileFlag, traceFlag, flagTest1, }  比如在Setup方法中处理参数，可以增加以下代码：
+if value := ctx.GlobalString(flagTest1.Name); value !</description>
+    </item>
+    
+  </channel>
+</rss>
