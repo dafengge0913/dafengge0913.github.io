@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Linux on 大峰哥的博客</title>
+    <link>https://dafengge0913.github.io/tags/linux/</link>
+    <description>Recent content in Linux on 大峰哥的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh_CN</language>
+    <lastBuildDate>Thu, 06 Dec 2018 18:03:17 +0800</lastBuildDate>
+    
+	<atom:link href="https://dafengge0913.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Linux下添加GoLand快捷方式</title>
+      <link>https://dafengge0913.github.io/linux-goland-shortcut/</link>
+      <pubDate>Thu, 06 Dec 2018 18:03:17 +0800</pubDate>
+      
+      <guid>https://dafengge0913.github.io/linux-goland-shortcut/</guid>
+      <description>最近在Ubuntu下搭建了go的开发环境，GoLand依然是我首选的IDE。
+安装过程非常简单，解压缩就可以了。
+但是通过sh goland.sh启动的话，每次还要定位到安装目录，有点麻烦。
+最开始想的办法是，写一个shell脚本放在桌面，类似这样：
+sh /home/dafengge0913/Software/goland-2018.3/bin/goland.sh  但是每次运行这个脚本还是很麻烦，不如windows下通过快捷方式运行方便。
+后来在网上搜了一下，发现可以通过GoLand中Tools菜单下的Create Desktop Entry...功能将GoLand添加到Applications中。再通过Add to Favorites加入到dock中，就非常方便了。
+那么GoLand是如何实现这个功能的呢？
+Google搜了一下&amp;rdquo;Linux如何管理applications&amp;ldquo;。 得知应用会在/usr/share/applications/目录下生成*.desktop文件，然而我定位到该目录下，却并没有找到与GoLand相关的文件。难道他用了一个我猜不到的文件名？但是既然能显示出来icon，那么总该配置一下goland.svg的路径吧，试着搜下文件内容吧：
+grep -in &amp;quot;goland&amp;quot; *  依然什么都没有找到，那么推断可能并不在这个目录中。
+通过一番研究，发现GoLand在/home/dafengge0913/.local/share/applications目录下生成了jetbrains-goland.desktop文件，内容如下：
+[Desktop Entry] Version=1.0 Type=Application Name=GoLand Icon=/home/dafengge0913/Software/goland-2018.3/bin/goland.svg Exec=&amp;quot;/home/dafengge0913/Software/goland-2018.3/bin/goland.sh&amp;quot; %f Comment=The Drive to Develop Categories=Development;IDE; Terminal=false StartupWMClass=jetbrains-goland  那么他为什么放在这呢？原来是这里：
+我没有勾选Create the entry for all users，勾选之后，/home/dafengge0913/.local/share/applications中就会出现了jetbrains-goland.desktop文件，内容与上面的相同。说明这个路径下的.desktop文件会对所有用户都有效，如果想只针对某个用户，那么就应该放到/home/{用户名}/.local/share/applications中。</description>
+    </item>
+    
+  </channel>
+</rss>

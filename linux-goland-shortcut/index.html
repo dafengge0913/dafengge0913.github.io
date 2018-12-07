@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="pinterest" content="nopin">
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+<meta name="generator" content="Hugo 0.51" />
+
+<link rel="canonical" href="https://dafengge0913.github.io/linux-goland-shortcut/">
+
+
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/darcula.min.css">
+    
+    <title>Linux下添加GoLand快捷方式 - 大峰哥的博客</title>
+    
+<meta name="description" content="最近在Ubuntu下搭建了go的开发环境，GoLand依然是我首选的IDE。安装过程非常简单，解压缩就可以了。但是通过sh goland.sh启动的话，每次还要定位到安装目录，有点麻烦。最开始想的办法是，写一个shell脚本放在桌面，类似这样：sh /home/dafengge0913/Software/goland-2018.3/bin/goland.sh  但是每次运行这个脚本还是很麻烦，不如windows下通过快捷方式运行方便。后来在网上搜了一下，发现可以通过GoLand中Tools菜单下的Create Desktop Entry...功能将GoLand添加到Applications中。再通过Add to Favorites加入到dock中，就非常方便了。那么GoLand是如何实现这个功能的呢？Google搜了一下&amp;rdquo;Linux如何管理applications&amp;ldquo;。 得知应用会在/usr/share/applications/目录下生成*.desktop文件，然而我定位到该目录下，却并没有找到与GoLand相关的文件。难道他用了一个我猜不到的文件名？但是既然能显示出来icon，那么总该配置一下goland.svg的路径吧，试着搜下文件内容吧：grep -in &amp;quot;goland&amp;quot; *  依然什么都没有找到，那么推断可能并不在这个目录中。通过一番研究，发现GoLand在/home/dafengge0913/.local/share/applications目录下生成了jetbrains-goland.desktop文件，内容如下：[Desktop Entry] Version=1.0 Type=Application Name=GoLand Icon=/home/dafengge0913/Software/goland-2018.3/bin/goland.svg Exec=&amp;quot;/home/dafengge0913/Software/goland-2018.3/bin/goland.sh&amp;quot; %f Comment=The Drive to Develop Categories=Development;IDE; Terminal=false StartupWMClass=jetbrains-goland  那么他为什么放在这呢？原来是这里：我没有勾选Create the entry for all users，勾选之后，/home/dafengge0913/.local/share/applications中就会出现了jetbrains-goland.desktop文件，内容与上面的相同。说明这个路径下的.desktop文件会对所有用户都有效，如果想只针对某个用户，那么就应该放到/home/{用户名}/.local/share/applications中。">
+
+<meta property="og:title" content="Linux下添加GoLand快捷方式 - 大峰哥的博客">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://dafengge0913.github.io/linux-goland-shortcut/">
+<meta property="og:image" content="https://dafengge0913.github.io/images/default.png">
+<meta property="og:site_name" content="大峰哥的博客">
+<meta property="og:description" content="最近在Ubuntu下搭建了go的开发环境，GoLand依然是我首选的IDE。安装过程非常简单，解压缩就可以了。但是通过sh goland.sh启动的话，每次还要定位到安装目录，有点麻烦。最开始想的办法是，写一个shell脚本放在桌面，类似这样：sh /home/dafengge0913/Software/goland-2018.3/bin/goland.sh  但是每次运行这个脚本还是很麻烦，不如windows下通过快捷方式运行方便。后来在网上搜了一下，发现可以通过GoLand中Tools菜单下的Create Desktop Entry...功能将GoLand添加到Applications中。再通过Add to Favorites加入到dock中，就非常方便了。那么GoLand是如何实现这个功能的呢？Google搜了一下&amp;rdquo;Linux如何管理applications&amp;ldquo;。 得知应用会在/usr/share/applications/目录下生成*.desktop文件，然而我定位到该目录下，却并没有找到与GoLand相关的文件。难道他用了一个我猜不到的文件名？但是既然能显示出来icon，那么总该配置一下goland.svg的路径吧，试着搜下文件内容吧：grep -in &amp;quot;goland&amp;quot; *  依然什么都没有找到，那么推断可能并不在这个目录中。通过一番研究，发现GoLand在/home/dafengge0913/.local/share/applications目录下生成了jetbrains-goland.desktop文件，内容如下：[Desktop Entry] Version=1.0 Type=Application Name=GoLand Icon=/home/dafengge0913/Software/goland-2018.3/bin/goland.svg Exec=&amp;quot;/home/dafengge0913/Software/goland-2018.3/bin/goland.sh&amp;quot; %f Comment=The Drive to Develop Categories=Development;IDE; Terminal=false StartupWMClass=jetbrains-goland  那么他为什么放在这呢？原来是这里：我没有勾选Create the entry for all users，勾选之后，/home/dafengge0913/.local/share/applications中就会出现了jetbrains-goland.desktop文件，内容与上面的相同。说明这个路径下的.desktop文件会对所有用户都有效，如果想只针对某个用户，那么就应该放到/home/{用户名}/.local/share/applications中。">
+<meta property="og:locale" content="zh_CN">
+
+
+<script type="application/ld+json">
+</script>
+
+
+    <link href="https://dafengge0913.github.io/css/styles.css" rel="stylesheet">
+    
+
+  </head>
+
+  <body>
+    <header class="l-header">
+      <nav class="navbar navbar-inverse">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://dafengge0913.github.io/">大峰哥的博客</a>
+          </div>
+
+          
+          <div id="navbar" class="collapse navbar-collapse">
+            
+            <ul class="nav navbar-nav navbar-right">
+              
+              
+              <li><a href="/about">关于我</a></li>
+              
+              
+            </ul>
+            
+          </div>
+          
+
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div class="container">
+        
+<div class="row">
+  <div class="col-md-8">
+
+    <nav class="p-crumb">
+      <ol class="breadcrumb">
+        <li><a href="https://dafengge0913.github.io/"><i class="fa fa-home" aria-hidden="true"></i></a></li>
+        
+        <li class="active">Linux下添加GoLand快捷方式</li>
+      </ol>
+    </nav>
+    <article class="single">
+  <header>
+    <ul class="p-facts">
+      
+      
+      
+    </ul>
+
+    <h1 class="title">Linux下添加GoLand快捷方式</h1>
+  </header>
+
+  
+
+  <div class="article-body"><p>最近在Ubuntu下搭建了go的开发环境，GoLand依然是我首选的IDE。<br />
+安装过程非常简单，解压缩就可以了。<br />
+但是通过<code>sh goland.sh</code>启动的话，每次还要定位到安装目录，有点麻烦。<br />
+最开始想的办法是，写一个shell脚本放在桌面，类似这样：</p>
+
+<pre><code class="language-bash">sh /home/dafengge0913/Software/goland-2018.3/bin/goland.sh
+</code></pre>
+
+<p>但是每次运行这个脚本还是很麻烦，不如windows下通过快捷方式运行方便。<br />
+后来在网上搜了一下，发现可以通过GoLand中<code>Tools</code>菜单下的<code>Create Desktop Entry...</code>功能将GoLand添加到Applications中。再通过<code>Add to Favorites</code>加入到dock中，就非常方便了。<br />
+<img src="/image/linux-goland-shortcut/favorites.png" alt="favorites" /></p>
+
+<p>那么GoLand是如何实现这个功能的呢？<br />
+Google搜了一下&rdquo;<strong>Linux如何管理applications</strong>&ldquo;。
+得知应用会在<code>/usr/share/applications/</code>目录下生成<code>*.desktop</code>文件，然而我定位到该目录下，却并没有找到与GoLand相关的文件。难道他用了一个我猜不到的文件名？但是既然能显示出来icon，那么总该配置一下<code>goland.svg</code>的路径吧，试着搜下文件内容吧：</p>
+
+<pre><code class="language-bash">grep -in &quot;goland&quot; *
+</code></pre>
+
+<p>依然什么都没有找到，那么推断可能并不在这个目录中。<br />
+通过一番研究，发现GoLand在<code>/home/dafengge0913/.local/share/applications</code>目录下生成了<code>jetbrains-goland.desktop</code>文件，内容如下：</p>
+
+<pre><code>[Desktop Entry]
+Version=1.0
+Type=Application
+Name=GoLand
+Icon=/home/dafengge0913/Software/goland-2018.3/bin/goland.svg
+Exec=&quot;/home/dafengge0913/Software/goland-2018.3/bin/goland.sh&quot; %f
+Comment=The Drive to Develop
+Categories=Development;IDE;
+Terminal=false
+StartupWMClass=jetbrains-goland
+</code></pre>
+
+<p>那么他为什么放在这呢？原来是这里：<br />
+<img src="/image/linux-goland-shortcut/goland.png" alt="goland" /><br />
+我没有勾选<code>Create the entry for all users</code>，勾选之后，<code>/home/dafengge0913/.local/share/applications</code>中就会出现了<code>jetbrains-goland.desktop</code>文件，内容与上面的相同。说明这个路径下的<code>.desktop</code>文件会对所有用户都有效，如果想只针对某个用户，那么就应该放到<code>/home/{用户名}/.local/share/applications</code>中。</p>
+</div>
+
+  <footer class="article-footer">
+    
+    
+    
+    <section class="bordered">
+      <header>
+        <div class="panel-title">TAGS</div>
+      </header>
+      <div>
+        <ul class="p-terms">
+          
+          <li><a href="https://dafengge0913.github.io/tags/linux/">linux</a></li>
+          
+        </ul>
+      </div>
+    </section>
+    
+    
+  </footer>
+
+</article>
+
+  </div>
+
+  <div class="col-md-4">
+    
+<aside class="l-sidebar">
+
+  
+  <section class="panel panel-default">
+    <div class="panel-heading">
+      <div class="panel-title">TAG</div>
+    </div>
+    <div class="list-group">
+      
+      <a href="https://dafengge0913.github.io/tags/golang" class="list-group-item">golang</a>
+      
+      <a href="https://dafengge0913.github.io/tags/java" class="list-group-item">java</a>
+      
+      <a href="https://dafengge0913.github.io/tags/network" class="list-group-item">network</a>
+      
+      <a href="https://dafengge0913.github.io/tags/algorithm" class="list-group-item">algorithm</a>
+      
+      <a href="https://dafengge0913.github.io/tags/blockchain" class="list-group-item">blockchain</a>
+      
+      <a href="https://dafengge0913.github.io/tags/jvm" class="list-group-item">jvm</a>
+      
+      <a href="https://dafengge0913.github.io/tags/linux" class="list-group-item">linux</a>
+      
+      <a href="https://dafengge0913.github.io/tags/test" class="list-group-item">test</a>
+      
+    </div>
+  </section>
+  
+
+</aside>
+
+
+  </div>
+</div>
+
+      </div>
+    </main>
+
+    <footer class="l-footer">
+      <div class="container">
+      </div>
+    </footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/gradle.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/kotlin.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+    $(function() { $('table').addClass('table'); })
+    </script>
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?78bdf940b9a9871ec1396580cc2fca94";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>      
+  </body>
+</html>
+
