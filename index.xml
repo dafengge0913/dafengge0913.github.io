@@ -6,10 +6,24 @@
     <description>Recent content on 大峰哥的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh_CN</language>
-    <lastBuildDate>Thu, 06 Dec 2018 18:03:17 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 25 Dec 2018 10:38:02 +0800</lastBuildDate>
     
 	<atom:link href="https://dafengge0913.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>基于Docker搭建MongoDB集群</title>
+      <link>https://dafengge0913.github.io/docker-mongos/</link>
+      <pubDate>Tue, 25 Dec 2018 10:38:02 +0800</pubDate>
+      
+      <guid>https://dafengge0913.github.io/docker-mongos/</guid>
+      <description>今天要帮公司搭建一个MongoDB的集群，记录一下搭建的过程。
+系统环境 Ubuntu 18.04.1 LTS
+安装Docker sudo apt install -y docker.io  安装完毕，查看一下Docker版本：
+dafengge0913@ubuntu:~$ docker -v Docker version 18.06.1-ce, build e68fc7a  拉取MongoDB镜像 sudo docker pull mongo  查看镜像：
+dafengge0913@ubuntu:~$ sudo docker images mongo REPOSITORY TAG IMAGE ID CREATED SIZE mongo latest 525bd2016729 4 weeks ago 383MB  使用Docker启动MongoDB sudo docker run -p 27017:27017 -v $PWD/db:/data/db -d mongo:latest  查看运行状态：
+dafengge0913@ubuntu:~/mongo$ sudo docker ps -a --no-trunc CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES bd27d09493c1fd663014410bf1cdf7227326cccb28733738311aa1cfc0cb7647 mongo:latest &amp;quot;docker-entrypoint.</description>
+    </item>
     
     <item>
       <title>Linux下添加GoLand快捷方式</title>

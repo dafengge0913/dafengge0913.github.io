@@ -65,6 +65,34 @@
       <li><article class="li">
   <header>
     <ul class="p-facts">
+      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2018-12-25T10:38:02JST">2018-12-25</time></li>
+      
+      
+    </ul>
+    <h2 class="title"><a href="https://dafengge0913.github.io/docker-mongos/">基于Docker搭建MongoDB集群</a></h2>
+  </header>
+
+  
+  <div class="summary">
+    
+      今天要帮公司搭建一个MongoDB的集群，记录一下搭建的过程。
+系统环境 Ubuntu 18.04.1 LTS
+安装Docker sudo apt install -y docker.io  安装完毕，查看一下Docker版本：
+dafengge0913@ubuntu:~$ docker -v Docker version 18.06.1-ce, build e68fc7a  拉取MongoDB镜像 sudo docker pull mongo  查看镜像：
+dafengge0913@ubuntu:~$ sudo docker images mongo REPOSITORY TAG IMAGE
+    
+  </div>
+
+  <footer>
+    <a href="https://dafengge0913.github.io/docker-mongos/" title="基于Docker搭建MongoDB集群">阅读全文…</a>
+  </footer>
+
+</article>
+</li>
+      
+      <li><article class="li">
+  <header>
+    <ul class="p-facts">
       <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2018-12-06T18:03:17JST">2018-12-06</time></li>
       
       
@@ -171,33 +199,6 @@ netstat -ano|findstr &quot;6666&quot;  发现6666端口处于监听状态。
 </article>
 </li>
       
-      <li><article class="li">
-  <header>
-    <ul class="p-facts">
-      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2018-09-11T14:18:53JST">2018-09-11</time></li>
-      
-      
-    </ul>
-    <h2 class="title"><a href="https://dafengge0913.github.io/wireshark-capture-localhost-on-windows/">Wireshark在Windows系统下抓取Localhost数据包</a></h2>
-  </header>
-
-  
-  <div class="summary">
-    
-      今天在写一个小东西的时候，发现客户端和服务器通信时，客户端收不到服务器发回的消息，于是决定用wireshark抓一下包，看看是服务器没回，还是客户端有bug。
-在wireshark下使用指定端口进行过滤，发现并没有抓取到任何数据包，然而服务器已经正常打印了客户端的请求内容，因此怀疑是wireshark的问题。
-Google了一下，在stackoverflow中找到了答案。原因是默认使用的WinPcap不能抓取loopback设备。解决的方法有很多，我选择了安装Npcap，使用wireshark时，选择使用Npcap Loopback Adapter就可以了。
-Npcap Loopback Ad
-    
-  </div>
-
-  <footer>
-    <a href="https://dafengge0913.github.io/wireshark-capture-localhost-on-windows/" title="Wireshark在Windows系统下抓取Localhost数据包">阅读全文…</a>
-  </footer>
-
-</article>
-</li>
-      
     </ul>
 
     
@@ -239,9 +240,13 @@ Npcap Loopback Ad
       
       <a href="https://dafengge0913.github.io/tags/blockchain" class="list-group-item">blockchain</a>
       
+      <a href="https://dafengge0913.github.io/tags/docker" class="list-group-item">docker</a>
+      
       <a href="https://dafengge0913.github.io/tags/jvm" class="list-group-item">jvm</a>
       
       <a href="https://dafengge0913.github.io/tags/linux" class="list-group-item">linux</a>
+      
+      <a href="https://dafengge0913.github.io/tags/mongodb" class="list-group-item">mongodb</a>
       
       <a href="https://dafengge0913.github.io/tags/test" class="list-group-item">test</a>
       

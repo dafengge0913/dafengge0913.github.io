@@ -6,14 +6,14 @@
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 <meta name="generator" content="Hugo 0.51" />
 
-<link rel="canonical" href="https://dafengge0913.github.io/tags/test/">
+<link rel="canonical" href="https://dafengge0913.github.io/tags/mongodb/">
 
 
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/darcula.min.css">
     
-    <title>Test - 大峰哥的博客</title>
+    <title>Mongodb - 大峰哥的博客</title>
     
     <link href="https://dafengge0913.github.io/css/styles.css" rel="stylesheet">
     
@@ -60,7 +60,7 @@
 
     
     <header class="page-header">
-      <h1>Test</h1>
+      <h1>Mongodb</h1>
     </header>
     
     <ul class="p-articles">
@@ -69,25 +69,26 @@
       <li><article class="li">
   <header>
     <ul class="p-facts">
-      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2018-08-01T17:26:21JST">2018-08-01</time></li>
+      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2018-12-25T10:38:02JST">2018-12-25</time></li>
       
       
     </ul>
-    <h2 class="title"><a href="https://dafengge0913.github.io/jmh/">Java benchmark 工具 JMH</a></h2>
+    <h2 class="title"><a href="https://dafengge0913.github.io/docker-mongos/">基于Docker搭建MongoDB集群</a></h2>
   </header>
 
   
   <div class="summary">
     
-      为什么需要Benchmark工具 如果想要知道一段代码的性能如何，一种常用的做法可能是这样的：
-long start = System.currentTimeMillis(); // do something &hellip; System.out.println(System.currentTimeMillis() - start);  这样做，存在几个问题：
- 结果不够精确
-首先，System.currentTimeMillis() 的注释里明确表示了，根据操作系统的不同，会存在数十毫秒的误差。虽然这个问题比较容易解决，但是造成测试结果不精确的主要原因并不是时间函数的误差，而是JVM和JIT在运行时
+      今天要帮公司搭建一个MongoDB的集群，记录一下搭建的过程。
+系统环境 Ubuntu 18.04.1 LTS
+安装Docker sudo apt install -y docker.io  安装完毕，查看一下Docker版本：
+dafengge0913@ubuntu:~$ docker -v Docker version 18.06.1-ce, build e68fc7a  拉取MongoDB镜像 sudo docker pull mongo  查看镜像：
+dafengge0913@ubuntu:~$ sudo docker images mongo REPOSITORY TAG IMAGE
     
   </div>
 
   <footer>
-    <a href="https://dafengge0913.github.io/jmh/" title="Java benchmark 工具 JMH">阅读全文…</a>
+    <a href="https://dafengge0913.github.io/docker-mongos/" title="基于Docker搭建MongoDB集群">阅读全文…</a>
   </footer>
 
 </article>
