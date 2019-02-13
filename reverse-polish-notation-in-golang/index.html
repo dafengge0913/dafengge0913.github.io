@@ -4,7 +4,7 @@
     <meta charset="utf-8">
 <meta name="pinterest" content="nopin">
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-<meta name="generator" content="Hugo 0.51" />
+<meta name="generator" content="Hugo 0.54.0" />
 
 <link rel="canonical" href="https://dafengge0913.github.io/reverse-polish-notation-in-golang/">
 
@@ -104,266 +104,266 @@
 <pre><code class="language-golang">package main
 
 import (
-    &quot;bufio&quot;
-    &quot;bytes&quot;
-    &quot;fmt&quot;
-    &quot;os&quot;
-    &quot;strconv&quot;
+	&quot;bufio&quot;
+	&quot;bytes&quot;
+	&quot;fmt&quot;
+	&quot;os&quot;
+	&quot;strconv&quot;
 )
 
 type node struct {
-    value interface{}
-    next  *node
+	value interface{}
+	next  *node
 }
 
 // 栈的链式结构实现
 type Stack struct {
-    top    *node
-    length int
+	top    *node
+	length int
 }
 
 func NewStack() *Stack {
-    return &amp;Stack{nil, 0}
+	return &amp;Stack{nil, 0}
 }
 
 func (s *Stack) Len() int {
-    return s.length
+	return s.length
 }
 
 // 获取栈顶元素
 func (s *Stack) Peek() interface{} {
-    if s.length == 0 {
-        return nil
-    }
-    return s.top.value
+	if s.length == 0 {
+		return nil
+	}
+	return s.top.value
 }
 
 // 弹出栈顶
 func (s *Stack) Pop() interface{} {
-    if s.length == 0 {
-        return nil
-    }
-    n := s.top
-    s.top = n.next
-    s.length--
-    return n.value
+	if s.length == 0 {
+		return nil
+	}
+	n := s.top
+	s.top = n.next
+	s.length--
+	return n.value
 }
 
 // 压栈
 func (s *Stack) Push(value interface{}) {
-    n := &amp;node{value, s.top}
-    // 从头部插入
-    s.top = n
-    s.length++
+	n := &amp;node{value, s.top}
+	// 从头部插入
+	s.top = n
+	s.length++
 }
 
 func main() {
-    var str string
-    fmt.Printf(&quot;Please enter expression: &quot;)
-    scanner := bufio.NewScanner(os.Stdin)
-    if scanner.Scan() {
-        // 读取表达式
-        str = scanner.Text()
-    }
-    if err := scanner.Err(); err != nil {
-        panic(err)
-    }
-    // 转为字符串数组
-    exp := toExp(str)
-    fmt.Print(&quot;Infix expression: &quot;)
-    printExp(exp)
-    // 转为后缀表达式
-    postfixExp := toPostfix(exp)
-    fmt.Print(&quot;Postfix expression: &quot;)
-    printExp(postfixExp)
-    // 计算结果
-    value := calValue(postfixExp)
-    fmt.Println(fmt.Sprintf(&quot;Result: %d&quot;, value))
+	var str string
+	fmt.Printf(&quot;Please enter expression: &quot;)
+	scanner := bufio.NewScanner(os.Stdin)
+	if scanner.Scan() {
+		// 读取表达式
+		str = scanner.Text()
+	}
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+	// 转为字符串数组
+	exp := toExp(str)
+	fmt.Print(&quot;Infix expression: &quot;)
+	printExp(exp)
+	// 转为后缀表达式
+	postfixExp := toPostfix(exp)
+	fmt.Print(&quot;Postfix expression: &quot;)
+	printExp(postfixExp)
+	// 计算结果
+	value := calValue(postfixExp)
+	fmt.Println(fmt.Sprintf(&quot;Result: %d&quot;, value))
 }
 
 // 将数字和操作符转为字符串数组
 func toExp(str string) []string {
-    s := make([]string, 0)
-    var t bytes.Buffer
-    n := 0 // 用于判断括号是否成对
-    for _, r := range str {
-        if r == ' ' {
-            // 去掉空格
-            continue
-        }
-        if isDigit(r) {
-            // 是数字 就写到缓存中
-            t.WriteRune(r)
-        } else {
-            rs := string(r)
-            if !isSign(rs) {
-                panic(&quot;unknown sign: &quot; + rs)
-            }
-            if t.Len() &gt; 0 {
-                // 遇到符号 把缓存中的数字 输出为数
-                // 例如 将缓存中的 ['1', '2', '3'] 输出为 &quot;123&quot;
-                s = append(s, t.String())
-                t.Reset()
-            }
-            s = append(s, rs)
-            if r == '(' {
-                n++
-            } else if r == ')' {
-                n--
-            }
-        }
-    }
-    if t.Len() &gt; 0 {
-        // 最后一个操作符后面的数字 如果最后一个操作符是 &quot;)&quot; 那么 t.Len() 为0
-        s = append(s, t.String())
-    }
-    if n != 0 {
-        panic(&quot;the number of '(' is not equal to the number of ')' &quot;)
-    }
-    return s
+	s := make([]string, 0)
+	var t bytes.Buffer
+	n := 0 // 用于判断括号是否成对
+	for _, r := range str {
+		if r == ' ' {
+			// 去掉空格
+			continue
+		}
+		if isDigit(r) {
+			// 是数字 就写到缓存中
+			t.WriteRune(r)
+		} else {
+			rs := string(r)
+			if !isSign(rs) {
+				panic(&quot;unknown sign: &quot; + rs)
+			}
+			if t.Len() &gt; 0 {
+				// 遇到符号 把缓存中的数字 输出为数
+				// 例如 将缓存中的 ['1', '2', '3'] 输出为 &quot;123&quot;
+				s = append(s, t.String())
+				t.Reset()
+			}
+			s = append(s, rs)
+			if r == '(' {
+				n++
+			} else if r == ')' {
+				n--
+			}
+		}
+	}
+	if t.Len() &gt; 0 {
+		// 最后一个操作符后面的数字 如果最后一个操作符是 &quot;)&quot; 那么 t.Len() 为0
+		s = append(s, t.String())
+	}
+	if n != 0 {
+		panic(&quot;the number of '(' is not equal to the number of ')' &quot;)
+	}
+	return s
 }
 
 func printExp(exp []string) {
-    for _, s := range exp {
-        fmt.Print(s, &quot; &quot;)
-    }
-    fmt.Println()
+	for _, s := range exp {
+		fmt.Print(s, &quot; &quot;)
+	}
+	fmt.Println()
 }
 
 // 是否数字
 func isDigit(r rune) bool {
-    if r &gt;= '0' &amp;&amp; r &lt;= '9' {
-        return true
-    }
-    return false
+	if r &gt;= '0' &amp;&amp; r &lt;= '9' {
+		return true
+	}
+	return false
 }
 
 // 是否符号
 func isSign(s string) bool {
-    switch s {
-    case &quot;+&quot;, &quot;-&quot;, &quot;*&quot;, &quot;/&quot;, &quot;(&quot;, &quot;)&quot;:
-        return true
-    default:
-        return false
-    }
+	switch s {
+	case &quot;+&quot;, &quot;-&quot;, &quot;*&quot;, &quot;/&quot;, &quot;(&quot;, &quot;)&quot;:
+		return true
+	default:
+		return false
+	}
 }
 
 // 中缀表达式转后缀表达式
 func toPostfix(exp []string) []string {
-    result := make([]string, 0)
-    s := NewStack()
-    for _, str := range exp {
-        if isSign(str) {
-            // 若是符号
-            if str == &quot;(&quot; || s.Len() == 0 {
-                // &quot;(&quot; 或者 栈为空 直接进栈
-                // 括号中的计算 需要单独处理 相当于一个新的上下文
-                // 如果栈为空 需要先进栈 和后续操作符比较优先级之后 才能决定计算顺序
-                s.Push(str)
-            } else {
-                if str == &quot;)&quot; {
-                    // 若为 &quot;)&quot; 依次弹出栈顶元素并输出 直到遇到 &quot;(&quot;
-                    for s.Len() &gt; 0 {
-                        if s.Peek().(string) == &quot;(&quot; {
-                            s.Pop()
-                            break
-                        }
-                        result = appendStr(result, s.Pop().(string))
-                    }
-                } else {
-                    // 判断其与栈顶符号的优先级
-                    // 如果栈顶是 &quot;(&quot; 说明是新的上下文 不能相互比较优先级
-                    for s.Len() &gt; 0 &amp;&amp; s.Peek().(string) != &quot;(&quot; &amp;&amp; signCompare(str, s.Peek().(string)) &lt;= 0 {
-                        // 当前符号的优先级 不大于栈顶元素 弹出栈顶元素并输出
-                        // 优先级高的操作 需要先计算
-                        // 优先级相同 因为栈中的操作是先放进去的 也需要先计算
-                        result = appendStr(result, s.Pop().(string))
-                    }
-                    // 当前符号入栈
-                    s.Push(str)
-                }
-            }
-        } else {
-            // 若是数字就输出
-            result = appendStr(result, str)
-        }
-    }
-    for s.Len() &gt; 0 {
-        result = appendStr(result, s.Pop().(string))
-    }
-    return result
+	result := make([]string, 0)
+	s := NewStack()
+	for _, str := range exp {
+		if isSign(str) {
+			// 若是符号
+			if str == &quot;(&quot; || s.Len() == 0 {
+				// &quot;(&quot; 或者 栈为空 直接进栈
+				// 括号中的计算 需要单独处理 相当于一个新的上下文
+				// 如果栈为空 需要先进栈 和后续操作符比较优先级之后 才能决定计算顺序
+				s.Push(str)
+			} else {
+				if str == &quot;)&quot; {
+					// 若为 &quot;)&quot; 依次弹出栈顶元素并输出 直到遇到 &quot;(&quot;
+					for s.Len() &gt; 0 {
+						if s.Peek().(string) == &quot;(&quot; {
+							s.Pop()
+							break
+						}
+						result = appendStr(result, s.Pop().(string))
+					}
+				} else {
+					// 判断其与栈顶符号的优先级
+					// 如果栈顶是 &quot;(&quot; 说明是新的上下文 不能相互比较优先级
+					for s.Len() &gt; 0 &amp;&amp; s.Peek().(string) != &quot;(&quot; &amp;&amp; signCompare(str, s.Peek().(string)) &lt;= 0 {
+						// 当前符号的优先级 不大于栈顶元素 弹出栈顶元素并输出
+						// 优先级高的操作 需要先计算
+						// 优先级相同 因为栈中的操作是先放进去的 也需要先计算
+						result = appendStr(result, s.Pop().(string))
+					}
+					// 当前符号入栈
+					s.Push(str)
+				}
+			}
+		} else {
+			// 若是数字就输出
+			result = appendStr(result, str)
+		}
+	}
+	for s.Len() &gt; 0 {
+		result = appendStr(result, s.Pop().(string))
+	}
+	return result
 }
 
 func appendStr(slice []string, str string) []string {
-    if str == &quot;(&quot; || str == &quot;)&quot; {
-        // 后缀表达式 不包含括号
-        return slice
-    }
-    return append(slice, str)
+	if str == &quot;(&quot; || str == &quot;)&quot; {
+		// 后缀表达式 不包含括号
+		return slice
+	}
+	return append(slice, str)
 }
 
 // 比较符号优先级
 func signCompare(a, b string) int {
-    return getSignValue(a) - getSignValue(b)
+	return getSignValue(a) - getSignValue(b)
 }
 
 // 优先级越高 值越大
 func getSignValue(a string) int {
-    switch a {
-    case &quot;(&quot;, &quot;)&quot;:
-        return 2
-    case &quot;*&quot;, &quot;/&quot;:
-        return 1
-    default:
-        return 0
-    }
+	switch a {
+	case &quot;(&quot;, &quot;)&quot;:
+		return 2
+	case &quot;*&quot;, &quot;/&quot;:
+		return 1
+	default:
+		return 0
+	}
 }
 
 // 通过后缀表达式 计算值
 func calValue(exp []string) int {
-    s := NewStack()
-    for _, str := range exp {
-        if isSign(str) {
-            // 如果是符号 弹出栈顶的两个元素 进行计算
-            // 因为栈结构先进后出 所以先弹出b
-            b := getInt(s)
-            a := getInt(s)
-            var n int
-            switch str {
-            case &quot;+&quot;:
-                n = a + b
-            case &quot;-&quot;:
-                n = a - b
-            case &quot;*&quot;:
-                n = a * b
-            case &quot;/&quot;:
-                n = a / b
-            }
-            // 计算结果压栈
-            s.Push(n)
-        } else {
-            // 数字直接压栈 也可以在这里做类型转换 使栈中的值均为int
-            s.Push(str)
-        }
-    }
-    // 栈顶元素 为最终结果
-    return getInt(s)
+	s := NewStack()
+	for _, str := range exp {
+		if isSign(str) {
+			// 如果是符号 弹出栈顶的两个元素 进行计算
+			// 因为栈结构先进后出 所以先弹出b
+			b := getInt(s)
+			a := getInt(s)
+			var n int
+			switch str {
+			case &quot;+&quot;:
+				n = a + b
+			case &quot;-&quot;:
+				n = a - b
+			case &quot;*&quot;:
+				n = a * b
+			case &quot;/&quot;:
+				n = a / b
+			}
+			// 计算结果压栈
+			s.Push(n)
+		} else {
+			// 数字直接压栈 也可以在这里做类型转换 使栈中的值均为int
+			s.Push(str)
+		}
+	}
+	// 栈顶元素 为最终结果
+	return getInt(s)
 }
 
 // 弹出栈顶元素 并转为int
 func getInt(s *Stack) int {
-    v := s.Pop()
-    switch v.(type) {
-    case int: // push进去的计算结果为int
-        return v.(int)
-    case string: // exp中的数据为string
-        if i, err := strconv.Atoi(v.(string)); err != nil {
-            panic(err)
-        } else {
-            return i
-        }
-    }
-    panic(fmt.Sprintf(&quot;unknown value type: %T&quot;, v))
+	v := s.Pop()
+	switch v.(type) {
+	case int: // push进去的计算结果为int
+		return v.(int)
+	case string: // exp中的数据为string
+		if i, err := strconv.Atoi(v.(string)); err != nil {
+			panic(err)
+		} else {
+			return i
+		}
+	}
+	panic(fmt.Sprintf(&quot;unknown value type: %T&quot;, v))
 }
 
 </code></pre>
@@ -383,30 +383,30 @@ Result: 20
 <pre><code class="language-golang">package main
 
 import (
-    &quot;testing&quot;
+	&quot;testing&quot;
 )
 
 var exp []string
 
 func init() {
-    str := &quot;1+(2*3+4-5*6/2+7)-2&quot;
-    exp = toExp(str)
+	str := &quot;1+(2*3+4-5*6/2+7)-2&quot;
+	exp = toExp(str)
 }
 
 func BenchmarkRPN(b *testing.B) {
-    var n int
-    for i := 0; i &lt; b.N; i++ {
-        n = calValue(toPostfix(exp))
-    }
-    b.Log(n)
+	var n int
+	for i := 0; i &lt; b.N; i++ {
+		n = calValue(toPostfix(exp))
+	}
+	b.Log(n)
 }
 
 func BenchmarkDirect(b *testing.B) {
-    var n int
-    for i := 0; i &lt; b.N; i++ {
-        n = 1 + (2*3 + 4 - 5*6/2 + 7) - 2
-    }
-    b.Log(n)
+	var n int
+	for i := 0; i &lt; b.N; i++ {
+		n = 1 + (2*3 + 4 - 5*6/2 + 7) - 2
+	}
+	b.Log(n)
 }
 
 
@@ -414,20 +414,20 @@ func BenchmarkDirect(b *testing.B) {
 
 <h3 id="运行结果-1">运行结果：</h3>
 
-<pre><code class="language-no-highlight">500000        2787 ns/op
+<pre><code class="language-no-highlight">500000	      2787 ns/op
 --- BENCH: BenchmarkRPN-8
-    main_test.go:19: 1
-    main_test.go:19: 1
-    main_test.go:19: 1
-    main_test.go:19: 1
-2000000000           0.29 ns/op
+	main_test.go:19: 1
+	main_test.go:19: 1
+	main_test.go:19: 1
+	main_test.go:19: 1
+2000000000	         0.29 ns/op
 --- BENCH: BenchmarkDirect-8
-    main_test.go:27: 1
-    main_test.go:27: 1
-    main_test.go:27: 1
-    main_test.go:27: 1
-    main_test.go:27: 1
-    main_test.go:27: 1
+	main_test.go:27: 1
+	main_test.go:27: 1
+	main_test.go:27: 1
+	main_test.go:27: 1
+	main_test.go:27: 1
+	main_test.go:27: 1
 </code></pre>
 </div>
 
@@ -474,9 +474,9 @@ func BenchmarkDirect(b *testing.B) {
       
       <a href="https://dafengge0913.github.io/tags/network" class="list-group-item">network</a>
       
-      <a href="https://dafengge0913.github.io/tags/algorithm" class="list-group-item">algorithm</a>
+      <a href="https://dafengge0913.github.io/tags/windows" class="list-group-item">windows</a>
       
-      <a href="https://dafengge0913.github.io/tags/blockchain" class="list-group-item">blockchain</a>
+      <a href="https://dafengge0913.github.io/tags/algorithm" class="list-group-item">algorithm</a>
       
       <a href="https://dafengge0913.github.io/tags/docker" class="list-group-item">docker</a>
       
@@ -486,7 +486,7 @@ func BenchmarkDirect(b *testing.B) {
       
       <a href="https://dafengge0913.github.io/tags/mongodb" class="list-group-item">mongodb</a>
       
-      <a href="https://dafengge0913.github.io/tags/test" class="list-group-item">test</a>
+      <a href="https://dafengge0913.github.io/tags/protobuf" class="list-group-item">protobuf</a>
       
     </div>
   </section>

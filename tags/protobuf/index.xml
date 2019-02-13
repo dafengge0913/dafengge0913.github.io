@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Protobuf on 大峰哥的博客</title>
+    <link>https://dafengge0913.github.io/tags/protobuf/</link>
+    <description>Recent content in Protobuf on 大峰哥的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh_CN</language>
+    <lastBuildDate>Wed, 13 Feb 2019 14:46:17 +0800</lastBuildDate>
+    
+	<atom:link href="https://dafengge0913.github.io/tags/protobuf/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Windows系统下Protoc使用统配符</title>
+      <link>https://dafengge0913.github.io/protoc-wildcard-windows/</link>
+      <pubDate>Wed, 13 Feb 2019 14:46:17 +0800</pubDate>
+      
+      <guid>https://dafengge0913.github.io/protoc-wildcard-windows/</guid>
+      <description>在windows系统下使用 protoc --gofast_out=. *.proto 生成pb文件时出现 *.proto: No such file or directory 错误。
+protoc 版本：libprotoc 3.6.1
+原因是*统配符并不受支持，为了能够生成目录下的所有.proto文件，编写了如下batch脚本：
+@echo off for /r %%i in (*.proto) do (echo generate %%i &amp;amp; protoc --proto_path=%cd% --gofast_out=. %%i)  对文件路径进行遍历，然后调用protoc进行生成。</description>
+    </item>
+    
+  </channel>
+</rss>

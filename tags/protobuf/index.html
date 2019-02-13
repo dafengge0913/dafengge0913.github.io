@@ -6,14 +6,14 @@
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 <meta name="generator" content="Hugo 0.54.0" />
 
-<link rel="canonical" href="https://dafengge0913.github.io/tags/docker/">
+<link rel="canonical" href="https://dafengge0913.github.io/tags/protobuf/">
 
 
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/darcula.min.css">
     
-    <title>Docker - 大峰哥的博客</title>
+    <title>Protobuf - 大峰哥的博客</title>
     
     <link href="https://dafengge0913.github.io/css/styles.css" rel="stylesheet">
     
@@ -60,7 +60,7 @@
 
     
     <header class="page-header">
-      <h1>Docker</h1>
+      <h1>Protobuf</h1>
     </header>
     
     <ul class="p-articles">
@@ -69,26 +69,25 @@
       <li><article class="li">
   <header>
     <ul class="p-facts">
-      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2018-12-25T10:38:02JST">2018-12-25</time></li>
+      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2019-02-13T14:46:17JST">2019-02-13</time></li>
       
       
     </ul>
-    <h2 class="title"><a href="https://dafengge0913.github.io/docker-mongos/">基于Docker搭建MongoDB集群</a></h2>
+    <h2 class="title"><a href="https://dafengge0913.github.io/protoc-wildcard-windows/">Windows系统下Protoc使用统配符</a></h2>
   </header>
 
   
   <div class="summary">
     
-      今天要帮公司搭建一个MongoDB的集群，记录一下搭建的过程。
-系统环境 Ubuntu 18.04.1 LTS
-安装Docker sudo apt install -y docker.io  安装完毕，查看一下Docker版本：
-dafengge0913@ubuntu:~$ docker -v Docker version 18.06.1-ce, build e68fc7a  拉取MongoDB镜像 sudo docker pull mongo  查看镜像：
-dafengge0913@ubuntu:~$ sudo docker images mongo REPOSITORY TAG IMAGE
+      在windows系统下使用 protoc &ndash;gofast_out=. *.proto 生成pb文件时出现 *.proto: No such file or directory 错误。
+protoc 版本：libprotoc 3.6.1
+原因是<em>统配符并不受支持，为了能够生成目录下的所有.proto文件，编写了如下batch脚本：
+@echo off for /r %%i in (</em>.proto) do (echo generate %%i &amp; protoc &ndash;proto_path=%cd% &ndash;gofast_out=. %%i)  对文件路径进行遍历，然后调用protoc进行生成。
     
   </div>
 
   <footer>
-    <a href="https://dafengge0913.github.io/docker-mongos/" title="基于Docker搭建MongoDB集群">阅读全文…</a>
+    <a href="https://dafengge0913.github.io/protoc-wildcard-windows/" title="Windows系统下Protoc使用统配符">阅读全文…</a>
   </footer>
 
 </article>

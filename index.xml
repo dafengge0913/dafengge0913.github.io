@@ -6,10 +6,22 @@
     <description>Recent content on 大峰哥的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh_CN</language>
-    <lastBuildDate>Tue, 25 Dec 2018 10:38:02 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 13 Feb 2019 14:46:17 +0800</lastBuildDate>
     
 	<atom:link href="https://dafengge0913.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Windows系统下Protoc使用统配符</title>
+      <link>https://dafengge0913.github.io/protoc-wildcard-windows/</link>
+      <pubDate>Wed, 13 Feb 2019 14:46:17 +0800</pubDate>
+      
+      <guid>https://dafengge0913.github.io/protoc-wildcard-windows/</guid>
+      <description>在windows系统下使用 protoc --gofast_out=. *.proto 生成pb文件时出现 *.proto: No such file or directory 错误。
+protoc 版本：libprotoc 3.6.1
+原因是*统配符并不受支持，为了能够生成目录下的所有.proto文件，编写了如下batch脚本：
+@echo off for /r %%i in (*.proto) do (echo generate %%i &amp;amp; protoc --proto_path=%cd% --gofast_out=. %%i)  对文件路径进行遍历，然后调用protoc进行生成。</description>
+    </item>
     
     <item>
       <title>基于Docker搭建MongoDB集群</title>
@@ -43,21 +55,6 @@ grep -in &amp;quot;goland&amp;quot; *  依然什么都没有找到，那么推�
 通过一番研究，发现GoLand在/home/dafengge0913/.local/share/applications目录下生成了jetbrains-goland.desktop文件，内容如下：
 [Desktop Entry] Version=1.0 Type=Application Name=GoLand Icon=/home/dafengge0913/Software/goland-2018.3/bin/goland.svg Exec=&amp;quot;/home/dafengge0913/Software/goland-2018.3/bin/goland.sh&amp;quot; %f Comment=The Drive to Develop Categories=Development;IDE; Terminal=false StartupWMClass=jetbrains-goland  那么他为什么放在这呢？原来是这里：
 我没有勾选Create the entry for all users，勾选之后，/home/dafengge0913/.local/share/applications中就会出现了jetbrains-goland.desktop文件，内容与上面的相同。说明这个路径下的.desktop文件会对所有用户都有效，如果想只针对某个用户，那么就应该放到/home/{用户名}/.local/share/applications中。</description>
-    </item>
-    
-    <item>
-      <title>以太坊 go-ethereum 新增启动参数</title>
-      <link>https://dafengge0913.github.io/ethereum-add-flag/</link>
-      <pubDate>Fri, 23 Nov 2018 16:23:52 +0800</pubDate>
-      
-      <guid>https://dafengge0913.github.io/ethereum-add-flag/</guid>
-      <description>最近在对go-ethereum项目进行二次开发时，增加几个新的启动参数，在运行时当作开关来使用，今天整理一下修改的过程。
-go-ethereum版本 v1.8.18-stable  修改过程 在项目入口cmd/geth/main.go的init方法中，注册了项目中使用的所有Flag：
-app.Flags = append(app.Flags, nodeFlags...) app.Flags = append(app.Flags, rpcFlags...) app.Flags = append(app.Flags, consoleFlags...) app.Flags = append(app.Flags, debug.Flags...) app.Flags = append(app.Flags, whisperFlags...) app.Flags = append(app.Flags, metricsFlags...)  可以根据参数的类型，定义在合适的文件里，比如我们需要一个debug的参数，那么可以定义在internal/debug/flags.go文件中。
-定义一个新的参数：
-flagTest1 = cli.StringFlag{ Name: &amp;quot;test1&amp;quot;, Usage: &amp;quot;Just for testing&amp;quot;, }  把它添加到Flags中：
-var Flags = []cli.Flag{ verbosityFlag, vmoduleFlag, backtraceAtFlag, debugFlag, pprofFlag, pprofAddrFlag, pprofPortFlag, memprofilerateFlag, blockprofilerateFlag, cpuprofileFlag, traceFlag, flagTest1, }  比如在Setup方法中处理参数，可以增加以下代码：
-if value := ctx.GlobalString(flagTest1.Name); value !</description>
     </item>
     
     <item>

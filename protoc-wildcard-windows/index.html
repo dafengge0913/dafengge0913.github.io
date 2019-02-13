@@ -6,23 +6,23 @@
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 <meta name="generator" content="Hugo 0.54.0" />
 
-<link rel="canonical" href="https://dafengge0913.github.io/wireshark-capture-localhost-on-windows/">
+<link rel="canonical" href="https://dafengge0913.github.io/protoc-wildcard-windows/">
 
 
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/darcula.min.css">
     
-    <title>Wireshark在Windows系统下抓取Localhost数据包 - 大峰哥的博客</title>
+    <title>Windows系统下Protoc使用统配符 - 大峰哥的博客</title>
     
-<meta name="description" content="今天在写一个小东西的时候，发现客户端和服务器通信时，客户端收不到服务器发回的消息，于是决定用wireshark抓一下包，看看是服务器没回，还是客户端有bug。在wireshark下使用指定端口进行过滤，发现并没有抓取到任何数据包，然而服务器已经正常打印了客户端的请求内容，因此怀疑是wireshark的问题。Google了一下，在stackoverflow中找到了答案。原因是默认使用的WinPcap不能抓取loopback设备。解决的方法有很多，我选择了安装Npcap，使用wireshark时，选择使用Npcap Loopback Adapter就可以了。Npcap Loopback Adapter只能抓取loopback的包，如果需要同时抓取localhost和外部访问，可以同时选择Npcap Loopback Adapter和以太网。通过上面的操作，wireshark可以顺利抓包了，发现服务器回包正常，问题出在了客户端读取上。">
+<meta name="description" content="在windows系统下使用 protoc --gofast_out=. *.proto 生成pb文件时出现 *.proto: No such file or directory 错误。protoc 版本：libprotoc 3.6.1原因是*统配符并不受支持，为了能够生成目录下的所有.proto文件，编写了如下batch脚本：@echo off for /r %%i in (*.proto) do (echo generate %%i &amp;amp; protoc --proto_path=%cd% --gofast_out=. %%i)  对文件路径进行遍历，然后调用protoc进行生成。">
 
-<meta property="og:title" content="Wireshark在Windows系统下抓取Localhost数据包 - 大峰哥的博客">
+<meta property="og:title" content="Windows系统下Protoc使用统配符 - 大峰哥的博客">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://dafengge0913.github.io/wireshark-capture-localhost-on-windows/">
+<meta property="og:url" content="https://dafengge0913.github.io/protoc-wildcard-windows/">
 <meta property="og:image" content="https://dafengge0913.github.io/images/default.png">
 <meta property="og:site_name" content="大峰哥的博客">
-<meta property="og:description" content="今天在写一个小东西的时候，发现客户端和服务器通信时，客户端收不到服务器发回的消息，于是决定用wireshark抓一下包，看看是服务器没回，还是客户端有bug。在wireshark下使用指定端口进行过滤，发现并没有抓取到任何数据包，然而服务器已经正常打印了客户端的请求内容，因此怀疑是wireshark的问题。Google了一下，在stackoverflow中找到了答案。原因是默认使用的WinPcap不能抓取loopback设备。解决的方法有很多，我选择了安装Npcap，使用wireshark时，选择使用Npcap Loopback Adapter就可以了。Npcap Loopback Adapter只能抓取loopback的包，如果需要同时抓取localhost和外部访问，可以同时选择Npcap Loopback Adapter和以太网。通过上面的操作，wireshark可以顺利抓包了，发现服务器回包正常，问题出在了客户端读取上。">
+<meta property="og:description" content="在windows系统下使用 protoc --gofast_out=. *.proto 生成pb文件时出现 *.proto: No such file or directory 错误。protoc 版本：libprotoc 3.6.1原因是*统配符并不受支持，为了能够生成目录下的所有.proto文件，编写了如下batch脚本：@echo off for /r %%i in (*.proto) do (echo generate %%i &amp;amp; protoc --proto_path=%cd% --gofast_out=. %%i)  对文件路径进行遍历，然后调用protoc进行生成。">
 <meta property="og:locale" content="zh_CN">
 
 
@@ -77,7 +77,7 @@
       <ol class="breadcrumb">
         <li><a href="https://dafengge0913.github.io/"><i class="fa fa-home" aria-hidden="true"></i></a></li>
         
-        <li class="active">Wireshark在Windows系统下抓取Localhost数据包</li>
+        <li class="active">Windows系统下Protoc使用统配符</li>
       </ol>
     </nav>
     <article class="single">
@@ -88,19 +88,23 @@
       
     </ul>
 
-    <h1 class="title">Wireshark在Windows系统下抓取Localhost数据包</h1>
+    <h1 class="title">Windows系统下Protoc使用统配符</h1>
   </header>
 
   
 
-  <div class="article-body"><p>今天在写一个小东西的时候，发现客户端和服务器通信时，客户端收不到服务器发回的消息，于是决定用wireshark抓一下包，看看是服务器没回，还是客户端有bug。<br />
-在wireshark下使用指定端口进行过滤，发现并没有抓取到任何数据包，然而服务器已经正常打印了客户端的请求内容，因此怀疑是wireshark的问题。<br />
-Google了一下，在<a href="https://stackoverflow.com/questions/5847168/wireshark-localhost-traffic-capture">stackoverflow</a>中找到了答案。原因是默认使用的WinPcap<a href="https://www.winpcap.org/misc/faq.htm#Q-13">不能抓取loopback设备</a>。解决的方法有很多，我选择了安装<a href="https://nmap.org/npcap/">Npcap</a>，使用wireshark时，选择使用<code>Npcap Loopback Adapter</code>就可以了。</p>
+  <div class="article-body"><p>在windows系统下使用 <code>protoc --gofast_out=. *.proto</code> 生成pb文件时出现 <code>*.proto: No such file or directory</code> 错误。</p>
 
-<p><img src="/image/wireshark-capture-localhost-on-windows/npcap.png" alt="npcap" /></p>
+<p>protoc 版本：libprotoc 3.6.1</p>
 
-<p><code>Npcap Loopback Adapter</code>只能抓取loopback的包，如果需要同时抓取localhost和外部访问，可以同时选择<code>Npcap Loopback Adapter</code>和<code>以太网</code>。<br />
-通过上面的操作，wireshark可以顺利抓包了，发现服务器回包正常，问题出在了客户端读取上。</p>
+<p>原因是*统配符并不受支持，为了能够生成目录下的所有.proto文件，编写了如下batch脚本：</p>
+
+<pre><code class="language-cmd">@echo off
+
+for /r %%i in (*.proto) do (echo generate %%i &amp; protoc --proto_path=%cd% --gofast_out=.  %%i)
+</code></pre>
+
+<p>对文件路径进行遍历，然后调用protoc进行生成。</p>
 </div>
 
   <footer class="article-footer">
@@ -114,7 +118,7 @@ Google了一下，在<a href="https://stackoverflow.com/questions/5847168/wiresh
       <div>
         <ul class="p-terms">
           
-          <li><a href="https://dafengge0913.github.io/tags/network/">network</a></li>
+          <li><a href="https://dafengge0913.github.io/tags/protobuf/">protobuf</a></li>
           
           <li><a href="https://dafengge0913.github.io/tags/windows/">windows</a></li>
           

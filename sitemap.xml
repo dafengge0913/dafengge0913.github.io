@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://dafengge0913.github.io/protoc-wildcard-windows/</loc>
+    <lastmod>2019-02-13T14:46:17+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://dafengge0913.github.io/docker-mongos/</loc>
     <lastmod>2018-12-25T10:38:02+08:00</lastmod>
   </url>
@@ -10,11 +15,6 @@
   <url>
     <loc>https://dafengge0913.github.io/linux-goland-shortcut/</loc>
     <lastmod>2018-12-06T18:03:17+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://dafengge0913.github.io/ethereum-add-flag/</loc>
-    <lastmod>2018-11-23T16:23:52+08:00</lastmod>
   </url>
   
   <url>
@@ -55,12 +55,6 @@
   <url>
     <loc>https://dafengge0913.github.io/tags/algorithm/</loc>
     <lastmod>2018-08-30T15:30:01+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://dafengge0913.github.io/tags/blockchain/</loc>
-    <lastmod>2018-11-23T16:23:52+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -107,6 +101,12 @@
   </url>
   
   <url>
+    <loc>https://dafengge0913.github.io/tags/protobuf/</loc>
+    <lastmod>2019-02-13T14:46:17+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://dafengge0913.github.io/tags/</loc>
     <lastmod>2018-08-30T15:30:01+08:00</lastmod>
     <priority>0</priority>
@@ -119,12 +119,18 @@
   </url>
   
   <url>
+    <loc>https://dafengge0913.github.io/tags/windows/</loc>
+    <lastmod>2019-02-13T14:46:17+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://dafengge0913.github.io/about/</loc>
   </url>
   
   <url>
     <loc>https://dafengge0913.github.io/</loc>
-    <lastmod>2018-12-25T10:38:02+08:00</lastmod>
+    <lastmod>2019-02-13T14:46:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
