@@ -6,23 +6,23 @@
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 <meta name="generator" content="Hugo 0.40.1" />
 
-<link rel="canonical" href="https://dafengge0913.github.io/protoc-wildcard-windows/">
+<link rel="canonical" href="https://dafengge0913.github.io/slice-or-map-for-search/">
 
 
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/darcula.min.css">
     
-    <title>Windows系统下Protoc使用统配符 - 大峰哥的博客</title>
+    <title>数据查询用Slice还是Map - 大峰哥的博客</title>
     
-<meta name="description" content="在windows系统下使用 protoc --gofast_out=. *.proto 生成pb文件时出现 *.proto: No such file or directory 错误。protoc 版本：libprotoc 3.6.1原因是*统配符并不受支持，为了能够生成目录下的所有.proto文件，编写了如下batch脚本：@echo off for /r %%i in (*.proto) do (echo generate %%i &amp;amp; protoc --proto_path=%cd% --gofast_out=. %%i)  对文件路径进行遍历，然后调用protoc进行生成。">
+<meta name="description" content="如果有一些不重复的数据需要记录，并且用来查询某一数据是否存在，可以有两种做法：1、存在slice中，每次查询时遍历slice，如果查到数据则退出遍历，时间复杂度是O(n)。2、存在一个集合中，golang中可以使用map的key来保存，每次直接判断该数据是否存在，时间复杂度是O(1)。从时间复杂度上面来看，使用map是有明显优势的，但是如果数据量较小，O(1)可能并没有O(n)的速度快，那么应该如何选择呢？下面写了一个性能测试：package main import ( &amp;quot;testing&amp;quot; ) var s []int var m map[int]struct{} func init() { num := 10 s = make([]int, num) m = make(map[int]struct{}, num) for i := 0; i &amp;lt; num; i&#43;&#43; { s[i] = i m[i] = struct{}{} } } func BenchmarkSlice(b *testing.B) { size := len(s) for i := 0; i &amp;lt; b.N; i&#43;&#43; { n := i % size for k := 0; k &amp;lt; len(s); k&#43;&#43; { if s[k] == n { break } } } } func BenchmarkMap(b *testing.">
 
-<meta property="og:title" content="Windows系统下Protoc使用统配符 - 大峰哥的博客">
+<meta property="og:title" content="数据查询用Slice还是Map - 大峰哥的博客">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://dafengge0913.github.io/protoc-wildcard-windows/">
+<meta property="og:url" content="https://dafengge0913.github.io/slice-or-map-for-search/">
 <meta property="og:image" content="https://dafengge0913.github.io/images/default.png">
 <meta property="og:site_name" content="大峰哥的博客">
-<meta property="og:description" content="在windows系统下使用 protoc --gofast_out=. *.proto 生成pb文件时出现 *.proto: No such file or directory 错误。protoc 版本：libprotoc 3.6.1原因是*统配符并不受支持，为了能够生成目录下的所有.proto文件，编写了如下batch脚本：@echo off for /r %%i in (*.proto) do (echo generate %%i &amp;amp; protoc --proto_path=%cd% --gofast_out=. %%i)  对文件路径进行遍历，然后调用protoc进行生成。">
+<meta property="og:description" content="如果有一些不重复的数据需要记录，并且用来查询某一数据是否存在，可以有两种做法：1、存在slice中，每次查询时遍历slice，如果查到数据则退出遍历，时间复杂度是O(n)。2、存在一个集合中，golang中可以使用map的key来保存，每次直接判断该数据是否存在，时间复杂度是O(1)。从时间复杂度上面来看，使用map是有明显优势的，但是如果数据量较小，O(1)可能并没有O(n)的速度快，那么应该如何选择呢？下面写了一个性能测试：package main import ( &amp;quot;testing&amp;quot; ) var s []int var m map[int]struct{} func init() { num := 10 s = make([]int, num) m = make(map[int]struct{}, num) for i := 0; i &amp;lt; num; i&#43;&#43; { s[i] = i m[i] = struct{}{} } } func BenchmarkSlice(b *testing.B) { size := len(s) for i := 0; i &amp;lt; b.N; i&#43;&#43; { n := i % size for k := 0; k &amp;lt; len(s); k&#43;&#43; { if s[k] == n { break } } } } func BenchmarkMap(b *testing.">
 <meta property="og:locale" content="zh_CN">
 
 
@@ -77,7 +77,7 @@
       <ol class="breadcrumb">
         <li><a href="https://dafengge0913.github.io/"><i class="fa fa-home" aria-hidden="true"></i></a></li>
         
-        <li class="active">Windows系统下Protoc使用统配符</li>
+        <li class="active">数据查询用Slice还是Map</li>
       </ol>
     </nav>
     <article class="single">
@@ -88,23 +88,81 @@
       
     </ul>
 
-    <h1 class="title">Windows系统下Protoc使用统配符</h1>
+    <h1 class="title">数据查询用Slice还是Map</h1>
   </header>
 
   
 
-  <div class="article-body"><p>在windows系统下使用 <code>protoc --gofast_out=. *.proto</code> 生成pb文件时出现 <code>*.proto: No such file or directory</code> 错误。</p>
+  <div class="article-body"><p>如果有一些不重复的数据需要记录，并且用来查询某一数据是否存在，可以有两种做法：<br />
+1、存在slice中，每次查询时遍历slice，如果查到数据则退出遍历，时间复杂度是O(n)。<br />
+2、存在一个集合中，golang中可以使用map的key来保存，每次直接判断该数据是否存在，时间复杂度是O(1)。</p>
 
-<p>protoc 版本：libprotoc 3.6.1</p>
+<p>从时间复杂度上面来看，使用map是有明显优势的，但是如果数据量较小，O(1)可能并没有O(n)的速度快，那么应该如何选择呢？<br />
+下面写了一个性能测试：</p>
 
-<p>原因是*统配符并不受支持，为了能够生成目录下的所有.proto文件，编写了如下batch脚本：</p>
+<pre><code class="language-golang">package main
 
-<pre><code class="language-cmd">@echo off
+import (
+	&quot;testing&quot;
+)
 
-for /r %%i in (*.proto) do (echo generate %%i &amp; protoc --proto_path=%cd% --gofast_out=.  %%i)
+var s []int
+var m map[int]struct{}
+
+func init() {
+	num := 10
+	s = make([]int, num)
+	m = make(map[int]struct{}, num)
+	for i := 0; i &lt; num; i++ {
+		s[i] = i
+		m[i] = struct{}{}
+	}
+}
+
+func BenchmarkSlice(b *testing.B) {
+	size := len(s)
+	for i := 0; i &lt; b.N; i++ {
+		n := i % size
+		for k := 0; k &lt; len(s); k++ {
+			if s[k] == n {
+				break
+			}
+		}
+	}
+}
+
+func BenchmarkMap(b *testing.B) {
+	size := len(s)
+	for i := 0; i &lt; b.N; i++ {
+		n := i % size
+		_ = m[n]
+	}
+}
+
 </code></pre>
 
-<p>对文件路径进行遍历，然后调用protoc进行生成。</p>
+<p>测试结果：<br />
+num = 1:<br />
+BenchmarkSlice-4    200000000            9.20 ns/op<br />
+BenchmarkMap-4      100000000           15.3 ns/op</p>
+
+<p>num = 10:<br />
+BenchmarkSlice-4    100000000           11.2 ns/op<br />
+BenchmarkMap-4      100000000           16.7 ns/op</p>
+
+<p>num = 20:<br />
+BenchmarkSlice-4    100000000           14.9 ns/op<br />
+BenchmarkMap-4      100000000           16.7 ns/op</p>
+
+<p>num = 30:<br />
+BenchmarkSlice-4    100000000           18.9 ns/op<br />
+BenchmarkMap-4      100000000           16.8 ns/op</p>
+
+<p>num = 100:<br />
+BenchmarkSlice-4    50000000            40.0 ns/op<br />
+BenchmarkMap-4      100000000           17.7 ns/op</p>
+
+<p>根据测试结果可以发现，map随着数据量的增多，对性能产生的影响比较小，在大量数据的情况下性能有明显优势，在无法估计数据量的情况下，map的适用范围更广。如果是性能关键点并且数据量较小，可以考虑使用slice。</p>
 </div>
 
   <footer class="article-footer">
@@ -118,9 +176,7 @@ for /r %%i in (*.proto) do (echo generate %%i &amp; protoc --proto_path=%cd% --g
       <div>
         <ul class="p-terms">
           
-          <li><a href="https://dafengge0913.github.io/tags/protobuf/">protobuf</a></li>
-          
-          <li><a href="https://dafengge0913.github.io/tags/windows/">windows</a></li>
+          <li><a href="https://dafengge0913.github.io/tags/golang/">golang</a></li>
           
         </ul>
       </div>

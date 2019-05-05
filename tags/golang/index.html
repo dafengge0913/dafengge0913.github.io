@@ -4,7 +4,7 @@
     <meta charset="utf-8">
 <meta name="pinterest" content="nopin">
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-<meta name="generator" content="Hugo 0.54.0" />
+<meta name="generator" content="Hugo 0.40.1" />
 
 <link rel="canonical" href="https://dafengge0913.github.io/tags/golang/">
 
@@ -65,6 +65,35 @@
     
     <ul class="p-articles">
       
+      
+      <li><article class="li">
+  <header>
+    <ul class="p-facts">
+      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2019-05-05T11:01:26JST">2019-05-05</time></li>
+      
+      
+    </ul>
+    <h2 class="title"><a href="https://dafengge0913.github.io/slice-or-map-for-search/">数据查询用Slice还是Map</a></h2>
+  </header>
+
+  
+  <div class="summary">
+    
+      如果有一些不重复的数据需要记录，并且用来查询某一数据是否存在，可以有两种做法：
+1、存在slice中，每次查询时遍历slice，如果查到数据则退出遍历，时间复杂度是O(n)。
+2、存在一个集合中，golang中可以使用map的key来保存，每次直接判断该数据是否存在，时间复杂度是O(1)。
+从时间复杂度上面来看，使用map是有明显优势的，但是如果数据量较小，O(1)可能并没有O(n)的速度快，那么应该如何选择呢？
+下面写了一个性能测试：
+package main import ( &quot;testing&quot; ) var s []int var m map[int]struct{}
+    
+  </div>
+
+  <footer>
+    <a href="https://dafengge0913.github.io/slice-or-map-for-search/" title="数据查询用Slice还是Map">阅读全文…</a>
+  </footer>
+
+</article>
+</li>
       
       <li><article class="li">
   <header>
