@@ -6,14 +6,14 @@
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 <meta name="generator" content="Hugo 0.40.1" />
 
-<link rel="canonical" href="https://dafengge0913.github.io/tags/linux/">
+<link rel="canonical" href="https://dafengge0913.github.io/tags/svn/">
 
 
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/darcula.min.css">
     
-    <title>Linux - 大峰哥的博客</title>
+    <title>Svn - 大峰哥的博客</title>
     
     <link href="https://dafengge0913.github.io/css/styles.css" rel="stylesheet">
     
@@ -60,7 +60,7 @@
 
     
     <header class="page-header">
-      <h1>Linux</h1>
+      <h1>Svn</h1>
     </header>
     
     <ul class="p-articles">
@@ -69,27 +69,23 @@
       <li><article class="li">
   <header>
     <ul class="p-facts">
-      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2018-12-06T18:03:17JST">2018-12-06</time></li>
+      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2019-09-10T18:47:18JST">2019-09-10</time></li>
       
       
     </ul>
-    <h2 class="title"><a href="https://dafengge0913.github.io/linux-goland-shortcut/">Linux下添加GoLand快捷方式</a></h2>
+    <h2 class="title"><a href="https://dafengge0913.github.io/docker-svn-server/">基于Docker搭建Svn Server</a></h2>
   </header>
 
   
   <div class="summary">
     
-      最近在Ubuntu下搭建了go的开发环境，GoLand依然是我首选的IDE。
-安装过程非常简单，解压缩就可以了。
-但是通过sh goland.sh启动的话，每次还要定位到安装目录，有点麻烦。
-最开始想的办法是，写一个shell脚本放在桌面，类似这样：
-sh /home/dafengge0913/Software/goland-2018.3/bin/goland.sh  但是每次运行这个脚本还是很麻烦，不如windows下通过快捷方式运行方便。
-后来在网上搜了一下，发现可以通过GoLand中Tools菜单下的Create Desktop Entry&hellip;功能将GoLand添加到Applicati
+      拉取svn-server的docker镜像 docker pull docker.io/garethflowers/svn-server  查看是否拉取成功：
+dafengge0913@ubuntu1804:~/svn-server$ docker images REPOSITORY TAG IMAGE ID CREATED SIZE garethflowers/svn-server latest a38966c9817a 4 months ago 13.7MB  启动svn-server docker run -d &ndash;name svn-server -v $PWD/svn:/var/opt
     
   </div>
 
   <footer>
-    <a href="https://dafengge0913.github.io/linux-goland-shortcut/" title="Linux下添加GoLand快捷方式">阅读全文…</a>
+    <a href="https://dafengge0913.github.io/docker-svn-server/" title="基于Docker搭建Svn Server">阅读全文…</a>
   </footer>
 
 </article>

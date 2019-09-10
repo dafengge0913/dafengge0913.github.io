@@ -6,23 +6,23 @@
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 <meta name="generator" content="Hugo 0.40.1" />
 
-<link rel="canonical" href="https://dafengge0913.github.io/wireshark-capture-localhost-on-windows/">
+<link rel="canonical" href="https://dafengge0913.github.io/docker-svn-server/">
 
 
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/darcula.min.css">
     
-    <title>Wireshark在Windows系统下抓取Localhost数据包 - 大峰哥的博客</title>
+    <title>基于Docker搭建Svn Server - 大峰哥的博客</title>
     
-<meta name="description" content="今天在写一个小东西的时候，发现客户端和服务器通信时，客户端收不到服务器发回的消息，于是决定用wireshark抓一下包，看看是服务器没回，还是客户端有bug。在wireshark下使用指定端口进行过滤，发现并没有抓取到任何数据包，然而服务器已经正常打印了客户端的请求内容，因此怀疑是wireshark的问题。Google了一下，在stackoverflow中找到了答案。原因是默认使用的WinPcap不能抓取loopback设备。解决的方法有很多，我选择了安装Npcap，使用wireshark时，选择使用Npcap Loopback Adapter就可以了。Npcap Loopback Adapter只能抓取loopback的包，如果需要同时抓取localhost和外部访问，可以同时选择Npcap Loopback Adapter和以太网。通过上面的操作，wireshark可以顺利抓包了，发现服务器回包正常，问题出在了客户端读取上。">
+<meta name="description" content="拉取svn-server的docker镜像 docker pull docker.io/garethflowers/svn-server  查看是否拉取成功：dafengge0913@ubuntu1804:~/svn-server$ docker images REPOSITORY TAG IMAGE ID CREATED SIZE garethflowers/svn-server latest a38966c9817a 4 months ago 13.7MB  启动svn-server docker run -d --name svn-server -v $PWD/svn:/var/opt/svn -p 3690:3690 garethflowers/svn-server  将svn目录，映射到了当前目录中创建仓库 docker exec -it svn-server svnadmin create repo  创建了仓库repo修改配置 配置文件位于svn/repo/conf目录中1、在svnserve.conf中，[general]标签下修改4项配置：anon-access = none # 匿名用户不能访问 auth-access = write # 授权用户可读可写 （&amp;quot;write&amp;quot; allows complete read/write access to the repository） password-db = passwd # 密码文件位置 authz-db = authz # 授权文件位置  2、在passwd中，[users]标签下创建用户：">
 
-<meta property="og:title" content="Wireshark在Windows系统下抓取Localhost数据包 - 大峰哥的博客">
+<meta property="og:title" content="基于Docker搭建Svn Server - 大峰哥的博客">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://dafengge0913.github.io/wireshark-capture-localhost-on-windows/">
+<meta property="og:url" content="https://dafengge0913.github.io/docker-svn-server/">
 <meta property="og:image" content="https://dafengge0913.github.io/images/default.png">
 <meta property="og:site_name" content="大峰哥的博客">
-<meta property="og:description" content="今天在写一个小东西的时候，发现客户端和服务器通信时，客户端收不到服务器发回的消息，于是决定用wireshark抓一下包，看看是服务器没回，还是客户端有bug。在wireshark下使用指定端口进行过滤，发现并没有抓取到任何数据包，然而服务器已经正常打印了客户端的请求内容，因此怀疑是wireshark的问题。Google了一下，在stackoverflow中找到了答案。原因是默认使用的WinPcap不能抓取loopback设备。解决的方法有很多，我选择了安装Npcap，使用wireshark时，选择使用Npcap Loopback Adapter就可以了。Npcap Loopback Adapter只能抓取loopback的包，如果需要同时抓取localhost和外部访问，可以同时选择Npcap Loopback Adapter和以太网。通过上面的操作，wireshark可以顺利抓包了，发现服务器回包正常，问题出在了客户端读取上。">
+<meta property="og:description" content="拉取svn-server的docker镜像 docker pull docker.io/garethflowers/svn-server  查看是否拉取成功：dafengge0913@ubuntu1804:~/svn-server$ docker images REPOSITORY TAG IMAGE ID CREATED SIZE garethflowers/svn-server latest a38966c9817a 4 months ago 13.7MB  启动svn-server docker run -d --name svn-server -v $PWD/svn:/var/opt/svn -p 3690:3690 garethflowers/svn-server  将svn目录，映射到了当前目录中创建仓库 docker exec -it svn-server svnadmin create repo  创建了仓库repo修改配置 配置文件位于svn/repo/conf目录中1、在svnserve.conf中，[general]标签下修改4项配置：anon-access = none # 匿名用户不能访问 auth-access = write # 授权用户可读可写 （&amp;quot;write&amp;quot; allows complete read/write access to the repository） password-db = passwd # 密码文件位置 authz-db = authz # 授权文件位置  2、在passwd中，[users]标签下创建用户：">
 <meta property="og:locale" content="zh_CN">
 
 
@@ -77,7 +77,7 @@
       <ol class="breadcrumb">
         <li><a href="https://dafengge0913.github.io/"><i class="fa fa-home" aria-hidden="true"></i></a></li>
         
-        <li class="active">Wireshark在Windows系统下抓取Localhost数据包</li>
+        <li class="active">基于Docker搭建Svn Server</li>
       </ol>
     </nav>
     <article class="single">
@@ -88,19 +88,99 @@
       
     </ul>
 
-    <h1 class="title">Wireshark在Windows系统下抓取Localhost数据包</h1>
+    <h1 class="title">基于Docker搭建Svn Server</h1>
   </header>
 
   
 
-  <div class="article-body"><p>今天在写一个小东西的时候，发现客户端和服务器通信时，客户端收不到服务器发回的消息，于是决定用wireshark抓一下包，看看是服务器没回，还是客户端有bug。<br />
-在wireshark下使用指定端口进行过滤，发现并没有抓取到任何数据包，然而服务器已经正常打印了客户端的请求内容，因此怀疑是wireshark的问题。<br />
-Google了一下，在<a href="https://stackoverflow.com/questions/5847168/wireshark-localhost-traffic-capture">stackoverflow</a>中找到了答案。原因是默认使用的WinPcap<a href="https://www.winpcap.org/misc/faq.htm#Q-13">不能抓取loopback设备</a>。解决的方法有很多，我选择了安装<a href="https://nmap.org/npcap/">Npcap</a>，使用wireshark时，选择使用<code>Npcap Loopback Adapter</code>就可以了。</p>
+  <div class="article-body">
 
-<p><img src="/image/wireshark-capture-localhost-on-windows/npcap.png" alt="npcap" /></p>
+<h2 id="拉取svn-server的docker镜像">拉取svn-server的docker镜像</h2>
 
-<p><code>Npcap Loopback Adapter</code>只能抓取loopback的包，如果需要同时抓取localhost和外部访问，可以同时选择<code>Npcap Loopback Adapter</code>和<code>以太网</code>。<br />
-通过上面的操作，wireshark可以顺利抓包了，发现服务器回包正常，问题出在了客户端读取上。</p>
+<pre><code class="language-bash">docker pull docker.io/garethflowers/svn-server
+</code></pre>
+
+<p>查看是否拉取成功：</p>
+
+<pre><code class="language-bash">dafengge0913@ubuntu1804:~/svn-server$ docker images
+REPOSITORY                 TAG                 IMAGE ID            CREATED             SIZE
+garethflowers/svn-server   latest              a38966c9817a        4 months ago        13.7MB
+
+</code></pre>
+
+<h2 id="启动svn-server">启动svn-server</h2>
+
+<pre><code class="language-bash">docker run -d --name svn-server -v $PWD/svn:/var/opt/svn -p 3690:3690 garethflowers/svn-server
+</code></pre>
+
+<p>将svn目录，映射到了当前目录中</p>
+
+<h2 id="创建仓库">创建仓库</h2>
+
+<pre><code class="language-bash">docker exec -it svn-server svnadmin create repo
+</code></pre>
+
+<p>创建了仓库repo</p>
+
+<h2 id="修改配置">修改配置</h2>
+
+<p>配置文件位于svn/repo/conf目录中<br />
+1、在svnserve.conf中，<code>[general]</code>标签下修改4项配置：</p>
+
+<pre><code>anon-access = none      # 匿名用户不能访问
+auth-access = write     # 授权用户可读可写 （&quot;write&quot; allows complete read/write access to the repository）
+password-db = passwd    # 密码文件位置
+authz-db = authz        # 授权文件位置
+</code></pre>
+
+<p>2、在passwd中，<code>[users]</code>标签下创建用户：</p>
+
+<pre><code>dfg = 123456
+</code></pre>
+
+<p>3、编辑授权文件authz：</p>
+
+<pre><code>[repo:/]
+dfg = rw
+</code></pre>
+
+<p>对于仓库repo的根目录，给用户dfg赋予读写权限</p>
+
+<h2 id="测试">测试</h2>
+
+<h3 id="1-检出仓库">1、检出仓库</h3>
+
+<pre><code class="language-bash">svn checkout svn://localhost:3690/repo
+</code></pre>
+
+<h3 id="2-提交文件">2、提交文件</h3>
+
+<pre><code class="language-bash">echo abc &gt; test.txt
+svn add test.txt
+svn commit
+</code></pre>
+
+<h3 id="3-删除本地文件">3、删除本地文件</h3>
+
+<pre><code class="language-bash">rm -f test.txt
+</code></pre>
+
+<h3 id="4-重启svn-server">4、重启svn-server</h3>
+
+<pre><code class="language-bash">docker restart svn-server
+</code></pre>
+
+<h3 id="5-查看仓库中的文件">5、查看仓库中的文件</h3>
+
+<pre><code class="language-bash">svn list test.txt
+</code></pre>
+
+<h3 id="6-还原文件">6、还原文件</h3>
+
+<pre><code class="language-bash">svn revert test.txt
+</code></pre>
+
+<p>svn-server 运行正常</p>
 </div>
 
   <footer class="article-footer">
@@ -114,9 +194,9 @@ Google了一下，在<a href="https://stackoverflow.com/questions/5847168/wiresh
       <div>
         <ul class="p-terms">
           
-          <li><a href="https://dafengge0913.github.io/tags/network/">network</a></li>
+          <li><a href="https://dafengge0913.github.io/tags/docker/">docker</a></li>
           
-          <li><a href="https://dafengge0913.github.io/tags/windows/">windows</a></li>
+          <li><a href="https://dafengge0913.github.io/tags/svn/">svn</a></li>
           
         </ul>
       </div>

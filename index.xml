@@ -6,10 +6,24 @@
     <description>Recent content on 大峰哥的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh_CN</language>
-    <lastBuildDate>Sun, 05 May 2019 11:01:26 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 10 Sep 2019 18:47:18 +0800</lastBuildDate>
     
 	<atom:link href="https://dafengge0913.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>基于Docker搭建Svn Server</title>
+      <link>https://dafengge0913.github.io/docker-svn-server/</link>
+      <pubDate>Tue, 10 Sep 2019 18:47:18 +0800</pubDate>
+      
+      <guid>https://dafengge0913.github.io/docker-svn-server/</guid>
+      <description>拉取svn-server的docker镜像 docker pull docker.io/garethflowers/svn-server  查看是否拉取成功：
+dafengge0913@ubuntu1804:~/svn-server$ docker images REPOSITORY TAG IMAGE ID CREATED SIZE garethflowers/svn-server latest a38966c9817a 4 months ago 13.7MB  启动svn-server docker run -d --name svn-server -v $PWD/svn:/var/opt/svn -p 3690:3690 garethflowers/svn-server  将svn目录，映射到了当前目录中
+创建仓库 docker exec -it svn-server svnadmin create repo  创建了仓库repo
+修改配置 配置文件位于svn/repo/conf目录中
+1、在svnserve.conf中，[general]标签下修改4项配置：
+anon-access = none # 匿名用户不能访问 auth-access = write # 授权用户可读可写 （&amp;quot;write&amp;quot; allows complete read/write access to the repository） password-db = passwd # 密码文件位置 authz-db = authz # 授权文件位置  2、在passwd中，[users]标签下创建用户：</description>
+    </item>
     
     <item>
       <title>数据查询用Slice还是Map</title>
